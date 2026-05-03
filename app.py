@@ -12,17 +12,20 @@ from models.database import (
 app = Flask(__name__)
 app.config.from_object(Config)
 
-# Initialisation des modèles
-periode_model = PeriodeModel()
-matiere_model = MatiereModel()
-enseignant_model = EnseignantModel()
-filiere_model = FiliereModel()
-correspondre_model = CorrespondreModel()
-etudiant_model = EtudiantModel()
-enseignement_model = EnseignementModel()
-assister_model = AssisterModel()
-message_model = MessageModel()
-rapport_model = RapportModel()
+# Initialisation lazy des modèles (à la demande)
+def get_models():
+    return {
+        'periode': PeriodeModel(),
+        'matiere': MatiereModel(),
+        'enseignant': EnseignantModel(),
+        'filiere': FiliereModel(),
+        'correspondre': CorrespondreModel(),
+        'etudiant': EtudiantModel(),
+        'enseignement': EnseignementModel(),
+        'assister': AssisterModel(),
+        'message': MessageModel(),
+        'rapport': RapportModel()
+    }
 
 # ============= ROUTES PRINCIPALES =============
 @app.route('/')

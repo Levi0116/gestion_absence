@@ -7,53 +7,48 @@ from config import Config
 class Database:
     def __init__(self):
         self.config = {
-            'host': Config.MYSQL_HOST,
-            'user': Config.MYSQL_USER,
-            'password': Config.MYSQL_PASSWORD,
-            'database': Config.MYSQL_DATABASE,  # IMPORTANT : Spécifier la base
-            'port': Config.MYSQL_PORT,
+            'host': os.environ.get('MYSQLHOST', Config.MYSQL_HOST),
+            'user': os.environ.get('MYSQLUSER', Config.MYSQL_USER),
+            'password': os.environ.get('MYSQLPASSWORD', Config.MYSQL_PASSWORD),
+            'database': os.environ.get('MYSQLDATABASE', Config.MYSQL_DATABASE),
+            'port': int(os.environ.get('MYSQLPORT', Config.MYSQL_PORT)),
             'charset': 'utf8mb4',
             'use_pure': True,
             'autocommit': True,
             'connection_timeout': 10,
-            'raise_on_warnings': True
         }
-    
+
     def get_connection(self):
         try:
             connection = mysql.connector.connect(**self.config)
             return connection
-        except Error as e:
+        except Exception as e:
             print(f"❌ Erreur de connexion: {e}")
             return None
-    
+
     def execute_query(self, query, params=None, fetch=False):
         conn = None
         cursor = None
         try:
             conn = self.get_connection()
             if not conn:
-                return None
-            
+                return [] if fetch else None
             cursor = conn.cursor(dictionary=True)
             cursor.execute(query, params or ())
-            
             if fetch:
-                result = cursor.fetchall()
-                return result
+                return cursor.fetchall()
             else:
                 conn.commit()
-                result = cursor.lastrowid
-                return result
-        except Error as e:
+                return cursor.lastrowid
+        except Exception as e:
             print(f"❌ Erreur d'exécution: {e}")
-            return None
+            return [] if fetch else None
         finally:
             if cursor:
                 cursor.close()
             if conn:
                 conn.close()
-
+                
 class PeriodeModel:
     def __init__(self):
         self.db = Database()
