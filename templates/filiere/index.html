@@ -1,0 +1,137 @@
+{% extends "base.html" %}
+
+{% block title %}Filières - Gestion des Absences{% endblock %}
+
+{% block breadcrumb %}
+<a href="{{ url_for('index') }}">Accueil</a>
+<span>Filières</span>
+{% endblock %}
+
+{% block content %}
+<div class="page-header">
+    <h1 class="page-title">
+        <i class="fas fa-building" style="margin-right: 12px;"></i>
+        Filières de formation
+    </h1>
+    <a href="{{ url_for('filiere_ajouter') }}" class="btn btn-primary">
+        <i class="fas fa-plus"></i>
+        Nouvelle filière
+    </a>
+</div>
+
+<div class="stats-mini">
+    {% for filiere in filieres %}
+    <div class="filiere-stat-card">
+        <div class="filiere-icon">
+            <i class="fas fa-graduation-cap"></i>
+        </div>
+        <div class="filiere-info">
+            <h3>{{ filiere.Libele_filiere }}</h3>
+            <div class="filiere-stats">
+                <span class="stat">
+                    <i class="fas fa-users"></i>
+                    {{ filiere.Nbre_etudiant }} étudiants
+                </span>
+                <span class="stat">
+                    <i class="fas fa-code"></i>
+                    Code: {{ filiere.code_filiere }}
+                </span>
+            </div>
+        </div>
+        <div class="filiere-actions">
+            <a href="{{ url_for('filiere_modifier', id=filiere.code_filiere) }}" class="btn-icon" title="Modifier">
+                <i class="fas fa-edit"></i>
+            </a>
+            <a href="{{ url_for('filiere_supprimer', id=filiere.code_filiere) }}" 
+               class="btn-icon btn-danger" 
+               onclick="return confirm('Supprimer cette filière ?')" 
+               title="Supprimer">
+                <i class="fas fa-trash"></i>
+            </a>
+        </div>
+    </div>
+    {% endfor %}
+</div>
+
+<style>
+    .stats-mini {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+        gap: 20px;
+    }
+    
+    .filiere-stat-card {
+        background: rgba(255, 255, 255, 0.95);
+        backdrop-filter: blur(20px);
+        border-radius: 16px;
+        padding: 25px;
+        border: 1px solid rgba(255, 255, 255, 0.3);
+        display: flex;
+        align-items: center;
+        gap: 20px;
+        transition: all 0.3s ease;
+    }
+    
+    .filiere-stat-card:hover {
+        transform: translateY(-3px);
+        box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+    }
+    
+    .filiere-icon {
+        width: 60px;
+        height: 60px;
+        border-radius: 16px;
+        background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: white;
+        font-size: 28px;
+    }
+    
+    .filiere-info {
+        flex: 1;
+    }
+    
+    .filiere-info h3 {
+        font-size: 18px;
+        font-weight: 600;
+        margin-bottom: 8px;
+        color: var(--dark);
+    }
+    
+    .filiere-stats {
+        display: flex;
+        flex-direction: column;
+        gap: 5px;
+    }
+    
+    .stat {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        font-size: 13px;
+        color: var(--gray);
+    }
+    
+    .stat i {
+        width: 16px;
+        color: var(--primary);
+    }
+    
+    .filiere-actions {
+        display: flex;
+        gap: 8px;
+    }
+    
+    @media (max-width: 768px) {
+        .stats-mini {
+            grid-template-columns: 1fr;
+        }
+        
+        .filiere-stat-card {
+            flex-wrap: wrap;
+        }
+    }
+</style>
+{% endblock %}

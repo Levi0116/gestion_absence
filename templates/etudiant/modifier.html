@@ -1,0 +1,94 @@
+{% extends "base.html" %}
+
+{% block title %}Modifier un Étudiant{% endblock %}
+
+{% block breadcrumb %}
+<a href="{{ url_for('index') }}">Accueil</a>
+<a href="{{ url_for('etudiants_index') }}">Étudiants</a>
+<span>Modifier</span>
+{% endblock %}
+
+{% block content %}
+<div class="page-header">
+    <h1 class="page-title">
+        <i class="fas fa-user-edit" style="margin-right: 12px;"></i>
+        Modifier l'étudiant
+    </h1>
+</div>
+
+<div class="form-container">
+    <form method="POST">
+        <div class="form-row">
+            <div class="form-group">
+                <label for="nom">
+                    <i class="fas fa-user"></i> Nom *
+                </label>
+                <input type="text" 
+                       id="nom" 
+                       name="nom" 
+                       class="form-control" 
+                       value="{{ etudiant.Nom }}"
+                       required>
+            </div>
+
+            <div class="form-group">
+                <label for="prenom">
+                    <i class="fas fa-user"></i> Prénom *
+                </label>
+                <input type="text" 
+                       id="prenom" 
+                       name="prenom" 
+                       class="form-control" 
+                       value="{{ etudiant.Prenom }}"
+                       required>
+            </div>
+        </div>
+
+        <div class="form-group">
+            <label for="sexe">
+                <i class="fas fa-venus-mars"></i> Sexe *
+            </label>
+            <select id="sexe" name="sexe" class="form-control" required>
+                <option value="M" {{ 'selected' if etudiant.Sexe == 'M' else '' }}>Masculin</option>
+                <option value="F" {{ 'selected' if etudiant.Sexe == 'F' else '' }}>Féminin</option>
+            </select>
+        </div>
+
+        <div class="form-group">
+            <label for="code_filiere">
+                <i class="fas fa-building"></i> Filière *
+            </label>
+            <select id="code_filiere" name="code_filiere" class="form-control" required>
+                {% for filiere in filieres %}
+                <option value="{{ filiere.code_filiere }}" {{ 'selected' if etudiant.code_filiere == filiere.code_filiere else '' }}>
+                    {{ filiere.Libele_filiere }}
+                </option>
+                {% endfor %}
+            </select>
+        </div>
+
+        <div class="form-actions">
+            <button type="submit" class="btn btn-success">
+                <i class="fas fa-save"></i> Mettre à jour
+            </button>
+            <a href="{{ url_for('etudiants_index') }}" class="btn btn-outline">
+                <i class="fas fa-times"></i> Annuler
+            </a>
+        </div>
+    </form>
+</div>
+
+<style>
+    .form-row {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 20px;
+    }
+    
+    @media (max-width: 768px) {
+        .form-row {
+            grid-template-columns: 1fr;
+        }
+    }
+</style>
+{% endblock %}

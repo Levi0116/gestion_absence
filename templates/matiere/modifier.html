@@ -1,0 +1,94 @@
+{% extends "base.html" %}
+
+{% block title %}Modifier une Matière{% endblock %}
+
+{% block breadcrumb %}
+<a href="{{ url_for('index') }}">Accueil</a>
+<a href="{{ url_for('matieres_index') }}">Matières</a>
+<span>Modifier</span>
+{% endblock %}
+
+{% block content %}
+<div class="page-header">
+    <h1 class="page-title">
+        <i class="fas fa-edit" style="margin-right: 12px;"></i>
+        Modifier la matière
+    </h1>
+</div>
+
+<div class="form-container">
+    <form method="POST">
+        <div class="form-group">
+            <label for="code_matiere">
+                <i class="fas fa-hashtag"></i> Code matière
+            </label>
+            <input type="text" 
+                   id="code_matiere" 
+                   class="form-control" 
+                   value="{{ matiere.code_matiere }}"
+                   disabled
+                   style="background: #f3f4f6;">
+            <small class="form-hint">Le code ne peut pas être modifié</small>
+        </div>
+
+        <div class="form-group">
+            <label for="nom_matiere">
+                <i class="fas fa-book"></i> Nom de la matière *
+            </label>
+            <input type="text" 
+                   id="nom_matiere" 
+                   name="nom_matiere" 
+                   class="form-control" 
+                   value="{{ matiere.Nom_matiere }}"
+                   required 
+                   placeholder="Ex: Programmation Web">
+        </div>
+
+        <div class="warning-box">
+            <i class="fas fa-exclamation-triangle"></i>
+            <div>
+                <strong>Attention</strong>
+                <p>La modification du nom de la matière n'affectera pas les associations existantes avec les filières.</p>
+            </div>
+        </div>
+
+        <div class="form-actions">
+            <button type="submit" class="btn btn-success">
+                <i class="fas fa-save"></i> Mettre à jour
+            </button>
+            <a href="{{ url_for('matieres_index') }}" class="btn btn-outline">
+                <i class="fas fa-times"></i> Annuler
+            </a>
+        </div>
+    </form>
+</div>
+
+<style>
+    .warning-box {
+        display: flex;
+        gap: 15px;
+        padding: 18px;
+        background: rgba(245, 158, 11, 0.08);
+        border-radius: 12px;
+        margin: 25px 0;
+        border-left: 4px solid var(--warning);
+    }
+    
+    .warning-box i {
+        font-size: 24px;
+        color: var(--warning);
+    }
+    
+    .warning-box strong {
+        display: block;
+        margin-bottom: 5px;
+        color: var(--dark);
+    }
+    
+    .warning-box p {
+        color: var(--gray);
+        font-size: 14px;
+        margin: 0;
+    }
+</style>
+{% endblock %}

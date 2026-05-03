@@ -1,0 +1,160 @@
+{% extends "base.html" %}
+
+{% block title %}Absences Justifiées - Module 3{% endblock %}
+
+{% block breadcrumb %}
+<a href="{{ url_for('index') }}">Accueil</a>
+<a href="{{ url_for('module3_index') }}">Module 3</a>
+<span>Absences Justifiées</span>
+{% endblock %}
+
+{% block content %}
+<div class="page-header">
+    <h1 class="page-title">
+        <i class="fas fa-check-double" style="margin-right: 12px;"></i>
+        Liste des Absences Justifiées
+    </h1>
+    <a href="{{ url_for('module3_export_absences_justifiees', filiere=selected_filiere, periode=selected_periode) }}" class="btn btn-primary">
+        <i class="fas fa-download"></i>
+        Exporter CSV
+    </a>
+</div>
+
+<!-- Filtres -->
+<div class="filter-bar">
+    <form method="GET" style="display: flex; align-items: center; gap: 15px; flex-wrap: wrap;">
+        <label><i class="fas fa-filter"></i> Filtres :</label>
+        <select name="filiere" class="form-control" style="width: 200px;" onchange="this.form.submit()">
+            <option value="">Toutes filières</option>
+            {% for filiere in filieres %}
+            <option value="{{ filiere.code_filiere }}" {{ 'selected' if selected_filiere == filiere.code_filiere else '' }}>
+                {{ filiere.Libele_filiere }}
+            </option>
+            {% endfor %}
+        </select>
+        
+        <select name="periode" class="form-control" style="width: 250px;" onchange="this.form.submit()">
+            <option value="">Toutes périodes</option>
+            {% for periode in periodes %}
+            <option value="{{ periode.id_periode }}" {{ 'selected' if selected_periode == periode.id_periode else '' }}>
+                {{ periode.Libelle_periode }}
+            </option>
+            {% endfor %}
+        </select>
+        
+        {% if selected_filiere or selected_periode %}
+        <a href="{{ url_for('module3_absences_justifiees') }}" class="btn btn-outline btn-sm">
+            <i class="fas fa-times"></i> Réinitialiser
+        </a>
+        {% endif %}
+    </form>
+</div>
+
+<!-- Compteur -->
+<div class="counter-bar">
+    <i class="fas fa-check-circle"></i>
+    <span>{{ (justifiees|default([]))|length }} absence(s) justifiée(s)</span>
+</div>
+
+<!-- Résultats -->
+{% if justifiees %}
+<div class="table-wrapper">
+    <table>
+        <thead>
+            <tr>
+                <th>Étudiant</th>
+                <th>Filière</th>
+                <th>Date</th>
+                <th>Horaire</th>
+                <th>Matière</th>
+                <th>Enseignant</th>
+                <th>Période</th>
+                <th>Motif</th>
+                <th>Date Justif.</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for j in justifiees %}
+            <tr>
+                <td><strong>{{ j.Prenom }} {{ j.Nom }}</strong></td>
+                <td>{{ j.Libele_filiere }}</td>
+                <td>{{ j.Date_enseignement.strftime('%d/%m/%Y') if j.Date_enseignement else '' }}</td>
+                <td>
+                    {% if j.Horaire_debut %}
+                        {{ j.Horaire_debut.strftime('%H:%M') if j.Horaire_debut is not string else j.Horaire_debut }} - 
+                        {{ j.Horaire_fin.strftime('%H:%M') if j.Horaire_fin is not string else j.Horaire_fin }}
+                    {% endif %}
+                </td>
+                <td>{{ j.Nom_matiere }}</td>
+                <td>{{ j.prenom_enseignant }} {{ j.nom_enseignant }}</td>
+                <td>{{ j.Libelle_periode }}</td>
+                <td>
+                    <span class="motif-badge">{{ j.motif_justification or 'Non spécifié' }}</span>
+                </td>
+                <td>
+                    <small>{{ j.date_justification.strftime('%d/%m/%Y') if j.date_justification else '-' }}</small>
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+{% else %}
+<div class="empty-state">
+    <i class="fas fa-check-circle" style="font-size: 64px; opacity: 0.3; color: #10b981;"></i>
+    <h3>Aucune absence justifiée</h3>
+    <p>Aucune absence justifiée trouvée pour ces filtres</p>
+</div>
+{% endif %}
+
+<style>
+    .filter-bar {
+        background: rgba(255, 255, 255, 0.95);
+        backdrop-filter: blur(20px);
+        border-radius: 12px;
+        padding: 15px 20px;
+        margin-bottom: 20px;
+        border: 1px solid rgba(255, 255, 255, 0.3);
+    }
+    
+    .counter-bar {
+        background: rgba(16, 185, 129, 0.1);
+        border: 1px solid rgba(16, 185, 129, 0.3);
+        border-radius: 10px;
+        padding: 12px 20px;
+        margin-bottom: 20px;
+        color: #059669;
+        font-weight: 500;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+    }
+    
+    .motif-badge {
+        background: rgba(245, 158, 11, 0.1);
+        color: #d97706;
+        padding: 5px 12px;
+        border-radius: 20px;
+        font-size: 13px;
+    }
+    
+    .btn-sm {
+        padding: 8px 16px;
+        font-size: 13px;
+    }
+    
+    .empty-state {
+        text-align: center;
+        padding: 60px 20px;
+    }
+    
+    .empty-state h3 {
+        margin: 20px 0 10px;
+        color: var(--dark);
+    }
+    
+    .empty-state p {
+        color: var(--gray);
+    }
+</style>
+{% endblock %}

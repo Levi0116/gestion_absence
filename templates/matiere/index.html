@@ -1,0 +1,102 @@
+{% extends "base.html" %}
+
+{% block title %}Matières - Gestion des Absences{% endblock %}
+
+{% block breadcrumb %}
+<a href="{{ url_for('index') }}">Accueil</a>
+<span>Matières</span>
+{% endblock %}
+
+{% block content %}
+<div class="page-header">
+    <h1 class="page-title">
+        <i class="fas fa-book" style="margin-right: 12px;"></i>
+        Catalogue des matières
+    </h1>
+    <a href="{{ url_for('matiere_ajouter') }}" class="btn btn-primary">
+        <i class="fas fa-plus"></i>
+        Nouvelle matière
+    </a>
+</div>
+
+<div class="table-wrapper">
+    {% if matieres %}
+    <table>
+        <thead>
+            <tr>
+                <th>Code</th>
+                <th>Nom de la matière</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for matiere in matieres %}
+            <tr>
+                <td>
+                    <span class="badge-code">{{ matiere.code_matiere }}</span>
+                </td>
+                <td>
+                    <div class="matiere-info">
+                        <i class="fas fa-book-open" style="color: var(--primary); margin-right: 10px;"></i>
+                        <strong>{{ matiere.Nom_matiere }}</strong>
+                    </div>
+                </td>
+                <td class="actions">
+                    <a href="{{ url_for('matiere_modifier', id=matiere.code_matiere) }}" class="btn-icon" title="Modifier">
+                        <i class="fas fa-edit"></i>
+                    </a>
+                    <a href="{{ url_for('matiere_supprimer', id=matiere.code_matiere) }}" 
+                       class="btn-icon btn-danger" 
+                       onclick="return confirm('Supprimer cette matière ? Les associations avec les filières seront également supprimées.')" 
+                       title="Supprimer">
+                        <i class="fas fa-trash"></i>
+                    </a>
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+    {% else %}
+    <div class="empty-state">
+        <i class="fas fa-book" style="font-size: 64px; opacity: 0.3;"></i>
+        <h3>Aucune matière</h3>
+        <p>Commencez par ajouter une matière au catalogue</p>
+        <a href="{{ url_for('matiere_ajouter') }}" class="btn btn-primary">
+            <i class="fas fa-plus"></i> Ajouter une matière
+        </a>
+    </div>
+    {% endif %}
+</div>
+
+<style>
+    .badge-code {
+        display: inline-block;
+        padding: 4px 10px;
+        background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+        color: white;
+        border-radius: 20px;
+        font-size: 12px;
+        font-weight: 600;
+    }
+    
+    .matiere-info {
+        display: flex;
+        align-items: center;
+    }
+    
+    .empty-state {
+        text-align: center;
+        padding: 60px 20px;
+    }
+    
+    .empty-state h3 {
+        margin: 20px 0 10px;
+        color: var(--dark);
+    }
+    
+    .empty-state p {
+        color: var(--gray);
+        margin-bottom: 25px;
+    }
+</style>
+{% endblock %}

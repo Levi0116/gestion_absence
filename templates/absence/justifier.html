@@ -1,0 +1,130 @@
+{% extends "base.html" %}
+
+{% block title %}Justifier une absence{% endblock %}
+
+{% block breadcrumb %}
+<a href="{{ url_for('index') }}">Accueil</a>
+<a href="{{ url_for('absences_index') }}">Absences</a>
+<span>Justifier</span>
+{% endblock %}
+
+{% block content %}
+<div class="page-header">
+    <h1 class="page-title">
+        <i class="fas fa-check-double" style="margin-right: 12px;"></i>
+        Justifier une absence
+    </h1>
+</div>
+
+<div class="form-container">
+    <!-- Informations -->
+    <div class="info-box">
+        <i class="fas fa-info-circle"></i>
+        <div>
+            <strong>Absence à justifier</strong>
+            <p>
+                Étudiant : <strong>{{ etudiant.Prenom }} {{ etudiant.Nom }}</strong><br>
+                Filière : {{ etudiant.Libele_filiere }}<br>
+                Date : {{ enseignement.Date_enseignement.strftime('%d/%m/%Y') if enseignement.Date_enseignement else '' }}<br>
+                Matière : {{ enseignement.Nom_matiere }}
+            </p>
+        </div>
+    </div>
+    
+    <form method="POST">
+        <div class="form-group">
+            <label for="motif">
+                <i class="fas fa-file-alt"></i> Motif de justification *
+            </label>
+            <textarea id="motif" 
+                      name="motif" 
+                      class="form-control" 
+                      rows="5" 
+                      required 
+                      placeholder="Ex: Certificat médical, raison familiale, etc."></textarea>
+            <small class="form-hint">Décrivez précisément le motif de l'absence</small>
+        </div>
+        
+        <div class="warning-box">
+            <i class="fas fa-exclamation-triangle"></i>
+            <div>
+                <strong>Important</strong>
+                <p>La justification de l'absence annule la pénalité mais l'absence reste comptabilisée dans le total des heures.</p>
+            </div>
+        </div>
+        
+        <div class="form-actions">
+            <button type="submit" class="btn btn-success">
+                <i class="fas fa-check"></i> Confirmer la justification
+            </button>
+            <a href="{{ url_for('absences_index') }}" class="btn btn-outline">
+                <i class="fas fa-times"></i> Annuler
+            </a>
+        </div>
+    </form>
+</div>
+
+<style>
+    .info-box {
+        display: flex;
+        gap: 15px;
+        padding: 18px;
+        background: rgba(59, 130, 246, 0.08);
+        border-radius: 12px;
+        margin-bottom: 25px;
+        border-left: 4px solid #3b82f6;
+    }
+    
+    .info-box i {
+        font-size: 24px;
+        color: #3b82f6;
+    }
+    
+    .info-box strong {
+        display: block;
+        margin-bottom: 8px;
+        color: var(--dark);
+    }
+    
+    .info-box p {
+        color: var(--gray);
+        font-size: 14px;
+        margin: 0;
+        line-height: 1.6;
+    }
+    
+    .warning-box {
+        display: flex;
+        gap: 15px;
+        padding: 18px;
+        background: rgba(245, 158, 11, 0.08);
+        border-radius: 12px;
+        margin: 25px 0;
+        border-left: 4px solid var(--warning);
+    }
+    
+    .warning-box i {
+        font-size: 24px;
+        color: var(--warning);
+    }
+    
+    .warning-box strong {
+        display: block;
+        margin-bottom: 5px;
+        color: var(--dark);
+    }
+    
+    .warning-box p {
+        color: var(--gray);
+        font-size: 14px;
+        margin: 0;
+    }
+    
+    .form-hint {
+        display: block;
+        margin-top: 5px;
+        font-size: 12px;
+        color: var(--gray);
+    }
+</style>
+{% endblock %}

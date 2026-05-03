@@ -1,0 +1,159 @@
+{% extends "base.html" %}
+
+{% block title %}Enseignants - Gestion des Absences{% endblock %}
+
+{% block breadcrumb %}
+<a href="{{ url_for('index') }}">Accueil</a>
+<span>Enseignants</span>
+{% endblock %}
+
+{% block content %}
+<div class="page-header">
+    <h1 class="page-title">
+        <i class="fas fa-chalkboard-teacher" style="margin-right: 12px;"></i>
+        Corps professoral
+    </h1>
+    <a href="{{ url_for('enseignant_ajouter') }}" class="btn btn-primary">
+        <i class="fas fa-plus"></i>
+        Nouvel enseignant
+    </a>
+</div>
+
+<div class="table-wrapper">
+    {% if enseignants %}
+    <table>
+        <thead>
+            <tr>
+                <th>ID</th>
+                <th>Nom complet</th>
+                <th>Email</th>
+                <th>Spécialité</th>
+                <th>Sexe</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for enseignant in enseignants %}
+            <tr>
+                <td>
+                    <span class="badge-id">{{ enseignant.id_enseignant }}</span>
+                </td>
+                <td>
+                    <div class="enseignant-info">
+                        <div class="avatar avatar-{{ 'female' if enseignant.Sexe == 'F' else 'male' }}">
+                            {{ enseignant.Prenom[0] }}{{ enseignant.Nom[0] }}
+                        </div>
+                        <div>
+                            <strong>{{ enseignant.Prenom }} {{ enseignant.Nom }}</strong>
+                            <br>
+                            <small>{{ enseignant.Diplome }}</small>
+                        </div>
+                    </div>
+                </td>
+                <td>
+                    <a href="mailto:{{ enseignant.Mail }}" class="email-link">
+                        <i class="fas fa-envelope"></i> {{ enseignant.Mail }}
+                    </a>
+                </td>
+                <td>{{ enseignant.Specialite or 'Non spécifié' }}</td>
+                <td>
+                                    <span class="sexe-badge sexe-{{ 'f' if enseignant.Sexe == 'F' else 'm' }}">
+                        <i class="fas fa-{{ 'venus' if enseignant.Sexe == 'F' else 'mars' }}"></i>
+                        {{ 'Féminin' if enseignant.Sexe == 'F' else 'Masculin' }}
+                    </span>
+                </td>
+                <td class="actions">
+                    <a href="{{ url_for('enseignant_modifier', id=enseignant.id_enseignant) }}" class="btn-icon" title="Modifier">
+                        <i class="fas fa-edit"></i>
+                    </a>
+                    <a href="{{ url_for('enseignant_supprimer', id=enseignant.id_enseignant) }}" 
+                       class="btn-icon btn-danger" 
+                       onclick="return confirm('Supprimer cet enseignant ?')" 
+                       title="Supprimer">
+                        <i class="fas fa-trash"></i>
+                    </a>
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+    {% else %}
+    <div class="empty-state">
+        <i class="fas fa-user-graduate" style="font-size: 64px; opacity: 0.3;"></i>
+        <h3>Aucun enseignant</h3>
+        <p>Ajoutez des enseignants pour commencer</p>
+        <a href="{{ url_for('enseignant_ajouter') }}" class="btn btn-primary">
+            <i class="fas fa-plus"></i> Ajouter un enseignant
+        </a>
+    </div>
+    {% endif %}
+</div>
+
+<style>
+    .badge-id {
+        display: inline-block;
+        padding: 4px 10px;
+        background: var(--gray);
+        color: white;
+        border-radius: 20px;
+        font-size: 12px;
+        font-weight: 600;
+    }
+    
+    .enseignant-info {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+    }
+    
+    .avatar {
+        width: 45px;
+        height: 45px;
+        border-radius: 12px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-weight: 600;
+        color: white;
+        text-transform: uppercase;
+    }
+    
+    .avatar-male {
+        background: linear-gradient(135deg, #3b82f6, #1d4ed8);
+    }
+    
+    .avatar-female {
+        background: linear-gradient(135deg, #ec4899, #be185d);
+    }
+    
+    .email-link {
+        color: var(--primary);
+        text-decoration: none;
+        font-size: 13px;
+    }
+    
+    .email-link:hover {
+        text-decoration: underline;
+    }
+    
+    .sexe-badge {
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        padding: 5px 12px;
+        border-radius: 20px;
+        font-size: 12px;
+        font-weight: 500;
+    }
+    
+    .sexe-m {
+        background: rgba(59, 130, 246, 0.1);
+        color: #3b82f6;
+    }
+    
+    .sexe-f {
+        background: rgba(236, 72, 153, 0.1);
+        color: #ec4899;
+    }
+</style>
+{% endblock %}

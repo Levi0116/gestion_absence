@@ -1,0 +1,195 @@
+{% extends "base.html" %}
+
+{% block title %}Absences par Filière et Période - Module 3{% endblock %}
+
+{% block breadcrumb %}
+<a href="{{ url_for('index') }}">Accueil</a>
+<a href="{{ url_for('module3_index') }}">Module 3</a>
+<span>Absences Filière/Période</span>
+{% endblock %}
+
+{% block content %}
+<div class="page-header">
+    <h1 class="page-title">
+        <i class="fas fa-filter" style="margin-right: 12px;"></i>
+        Absences par Filière et Période
+    </h1>
+    <a href="{{ url_for('module3_export_absences_etudiant', filiere=selected_filiere, periode=selected_periode) }}" class="btn btn-primary">
+        <i class="fas fa-download"></i>
+        Exporter CSV
+    </a>
+</div>
+
+<!-- Filtres -->
+<div class="filter-bar">
+    <form method="GET" style="display: flex; align-items: center; gap: 15px; flex-wrap: wrap;">
+        <label><i class="fas fa-filter"></i> Filtres :</label>
+        <select name="filiere" class="form-control" style="width: 200px;" onchange="this.form.submit()">
+            <option value="">Toutes filières</option>
+            {% for filiere in filieres %}
+            <option value="{{ filiere.code_filiere }}" {{ 'selected' if selected_filiere == filiere.code_filiere else '' }}>
+                {{ filiere.Libele_filiere }}
+            </option>
+            {% endfor %}
+        </select>
+        
+        <select name="periode" class="form-control" style="width: 250px;" onchange="this.form.submit()">
+            <option value="">Toutes périodes</option>
+            {% for periode in periodes %}
+            <option value="{{ periode.id_periode }}" {{ 'selected' if selected_periode == periode.id_periode else '' }}>
+                {{ periode.Libelle_periode }}
+            </option>
+            {% endfor %}
+        </select>
+        
+        {% if selected_filiere or selected_periode %}
+        <a href="{{ url_for('module3_absences_par_filiere_periode') }}" class="btn btn-outline btn-sm">
+            <i class="fas fa-times"></i> Réinitialiser
+        </a>
+        {% endif %}
+    </form>
+</div>
+
+<!-- Résultats -->
+{% if absences %}
+<div class="table-wrapper">
+    <table>
+        <thead>
+            <tr>
+                <th>Filière</th>
+                <th>Période</th>
+                <th>Étudiants</th>
+                <th>Séances</th>
+                <th>Présences</th>
+                <th>Absences</th>
+                <th>Justifiées</th>
+                <th>Taux Présence</th>
+                <th>Taux Absence</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for a in absences %}
+            <tr>
+                <td><strong>{{ a.Libele_filiere }}</strong></td>
+                <td>
+                    {{ a.Libelle_periode }}
+                    <br><small>{{ a.Date_debut.strftime('%d/%m/%Y') if a.Date_debut else '' }} - {{ a.Date_fin.strftime('%d/%m/%Y') if a.Date_fin else '' }}</small>
+                </td>
+                <td>{{ a.nb_etudiants or 0 }}</td>
+                <td>{{ a.nb_seances or 0 }}</td>
+                <td><span class="badge-success">{{ a.nb_presences or 0 }}</span></td>
+                <td><span class="badge-danger">{{ a.nb_absences or 0 }}</span></td>
+                <td><span class="badge-warning">{{ a.nb_justifiees or 0 }}</span></td>
+                <td>
+                    <div class="progress-small">
+                        <div class="progress-fill" style="width: {{ a.taux_presence or 0 }}%">
+                            {{ a.taux_presence or 0 }}%
+                        </div>
+                    </div>
+                </td>
+                <td>
+                    <div class="progress-small">
+                        <div class="progress-fill-danger" style="width: {{ a.taux_absence or 0 }}%">
+                            {{ a.taux_absence or 0 }}%
+                        </div>
+                    </div>
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+{% else %}
+<div class="empty-state">
+    <i class="fas fa-filter" style="font-size: 64px; opacity: 0.3;"></i>
+    <h3>Aucune donnée</h3>
+    <p>Aucune absence trouvée pour ces filtres</p>
+</div>
+{% endif %}
+
+<style>
+    .filter-bar {
+        background: rgba(255, 255, 255, 0.95);
+        backdrop-filter: blur(20px);
+        border-radius: 12px;
+        padding: 15px 20px;
+        margin-bottom: 25px;
+        border: 1px solid rgba(255, 255, 255, 0.3);
+    }
+    
+    .badge-success {
+        background: rgba(16, 185, 129, 0.15);
+        color: #059669;
+        padding: 4px 10px;
+        border-radius: 20px;
+        font-weight: 600;
+    }
+    
+    .badge-danger {
+        background: rgba(239, 68, 68, 0.15);
+        color: #dc2626;
+        padding: 4px 10px;
+        border-radius: 20px;
+        font-weight: 600;
+    }
+    
+    .badge-warning {
+        background: rgba(245, 158, 11, 0.15);
+        color: #d97706;
+        padding: 4px 10px;
+        border-radius: 20px;
+        font-weight: 600;
+    }
+    
+    .progress-small {
+        background: #e5e7eb;
+        border-radius: 20px;
+        height: 22px;
+        overflow: hidden;
+        width: 100%;
+    }
+    
+    .progress-fill {
+        background: linear-gradient(90deg, #10b981, #059669);
+        color: white;
+        font-size: 11px;
+        font-weight: 600;
+        height: 100%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        min-width: 40px;
+    }
+    
+    .progress-fill-danger {
+        background: linear-gradient(90deg, #ef4444, #dc2626);
+        color: white;
+        font-size: 11px;
+        font-weight: 600;
+        height: 100%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        min-width: 40px;
+    }
+    
+    .btn-sm {
+        padding: 8px 16px;
+        font-size: 13px;
+    }
+    
+    .empty-state {
+        text-align: center;
+        padding: 60px 20px;
+    }
+    
+    .empty-state h3 {
+        margin: 20px 0 10px;
+        color: var(--dark);
+    }
+    
+    .empty-state p {
+        color: var(--gray);
+    }
+</style>
+{% endblock %}

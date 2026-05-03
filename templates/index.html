@@ -1,0 +1,237 @@
+{% extends "base.html" %}
+
+{% block title %}Tableau de bord - Gestion des Absences{% endblock %}
+
+{% block breadcrumb %}
+<a href="{{ url_for('index') }}">Accueil</a>
+{% endblock %}
+
+{% block content %}
+<div class="dashboard">
+    <!-- Hero section -->
+    <div class="dashboard-hero">
+        <div class="hero-content">
+            <h1 class="hero-title">
+                <span class="title-line">Gestion des</span>
+                <span class="title-line highlight">Absences</span>
+            </h1>
+            <p class="hero-subtitle">
+                Système complet de gestion académique et suivi des présences
+            </p>
+        </div>
+        <div class="hero-illustration">
+            <i class="fas fa-clipboard-list"></i>
+        </div>
+    </div>
+    
+    <!-- Section Paramétrage -->
+    <h2 class="section-title">
+        <i class="fas fa-cog"></i> Module Paramétrage
+    </h2>
+    
+    <div class="stats-grid">
+        <a href="{{ url_for('periodes_index') }}" class="stat-card stat-card-1">
+            <div class="stat-icon">
+                <i class="fas fa-calendar"></i>
+            </div>
+            <div class="stat-content">
+                <h3>Périodes</h3>
+                <p>Gérer les périodes d'évaluation</p>
+                <span class="stat-badge">{{ nb_periodes }}</span>
+            </div>
+            <span class="stat-link">
+                Accéder <i class="fas fa-arrow-right"></i>
+            </span>
+        </a>
+        
+        <a href="{{ url_for('matieres_index') }}" class="stat-card stat-card-2">
+            <div class="stat-icon">
+                <i class="fas fa-book-open"></i>
+            </div>
+            <div class="stat-content">
+                <h3>Matières</h3>
+                <p>Catalogue des enseignements</p>
+                <span class="stat-badge">{{ nb_matieres }}</span>
+            </div>
+            <span class="stat-link">
+                Accéder <i class="fas fa-arrow-right"></i>
+            </span>
+        </a>
+        
+        <a href="{{ url_for('enseignants_index') }}" class="stat-card stat-card-3">
+            <div class="stat-icon">
+                <i class="fas fa-user-graduate"></i>
+            </div>
+            <div class="stat-content">
+                <h3>Enseignants</h3>
+                <p>Corps professoral</p>
+                <span class="stat-badge">{{ nb_enseignants }}</span>
+            </div>
+            <span class="stat-link">
+                Accéder <i class="fas fa-arrow-right"></i>
+            </span>
+        </a>
+        
+        <a href="{{ url_for('filieres_index') }}" class="stat-card stat-card-4">
+            <div class="stat-icon">
+                <i class="fas fa-layer-group"></i>
+            </div>
+            <div class="stat-content">
+                <h3>Filières</h3>
+                <p>Parcours de formation</p>
+                <span class="stat-badge">{{ nb_filieres }}</span>
+            </div>
+            <span class="stat-link">
+                Accéder <i class="fas fa-arrow-right"></i>
+            </span>
+        </a>
+        
+        <a href="{{ url_for('correspondre_index') }}" class="stat-card stat-card-5">
+            <div class="stat-icon">
+                <i class="fas fa-diagram-project"></i>
+            </div>
+            <div class="stat-content">
+                <h3>Associations</h3>
+                <p>Liens Filières-Matières</p>
+            </div>
+            <span class="stat-link">
+                Accéder <i class="fas fa-arrow-right"></i>
+            </span>
+        </a>
+    </div>
+    
+    <!-- Section Saisie -->
+    <h2 class="section-title">
+        <i class="fas fa-pen-to-square"></i> Module Saisie & Suivi
+    </h2>
+    
+    <div class="stats-grid">
+        <a href="{{ url_for('etudiants_index') }}" class="stat-card stat-card-6">
+            <div class="stat-icon">
+                <i class="fas fa-users"></i>
+            </div>
+            <div class="stat-content">
+                <h3>Étudiants</h3>
+                <p>Inscriptions et gestion</p>
+                <span class="stat-badge">{{ nb_etudiants }}</span>
+            </div>
+            <span class="stat-link">
+                Accéder <i class="fas fa-arrow-right"></i>
+            </span>
+        </a>
+        
+        <a href="{{ url_for('enseignements_index') }}" class="stat-card stat-card-7">
+            <div class="stat-icon">
+                <i class="fas fa-calendar-plus"></i>
+            </div>
+            <div class="stat-content">
+                <h3>Séances</h3>
+                <p>Programmation des cours</p>
+                <span class="stat-badge">{{ nb_enseignements }}</span>
+            </div>
+            <span class="stat-link">
+                Accéder <i class="fas fa-arrow-right"></i>
+            </span>
+        </a>
+        
+        <a href="{{ url_for('absences_index') }}" class="stat-card stat-card-8">
+            <div class="stat-icon">
+                <i class="fas fa-exclamation-triangle"></i>
+            </div>
+            <div class="stat-content">
+                <h3>Absences</h3>
+                <p>À justifier</p>
+                <span class="stat-badge badge-warning">{{ nb_absences }}</span>
+            </div>
+            <span class="stat-link">
+                Accéder <i class="fas fa-arrow-right"></i>
+            </span>
+        </a>
+        
+        <a href="{{ url_for('statistiques_index') }}" class="stat-card stat-card-9">
+            <div class="stat-icon">
+                <i class="fas fa-chart-pie"></i>
+            </div>
+            <div class="stat-content">
+                <h3>Statistiques</h3>
+                <p>Tableau de bord analytique</p>
+            </div>
+            <span class="stat-link">
+                Accéder <i class="fas fa-arrow-right"></i>
+            </span>
+        </a>
+    </div>
+    
+    <!-- Info règlement -->
+    <div class="reglement-card">
+        <div class="reglement-icon">
+            <i class="fas fa-scale-balanced"></i>
+        </div>
+        <div class="reglement-text">
+            <h3>Rappel du règlement intérieur</h3>
+            <ul>
+                <li><strong>Article 13 :</strong> Absence > 5 × crédits → ECUE invalidé</li>
+                <li><strong>Article 14 :</strong> Absence non justifiée à l'examen final → Blocage compensation</li>
+                <li><strong>Article 15 :</strong> Pénalité de 0,1 point par heure d'absence non justifiée</li>
+            </ul>
+        </div>
+    </div>
+</div>
+
+<style>
+    .section-title {
+        color: white;
+        margin: 30px 0 20px;
+        font-size: 22px;
+        font-weight: 600;
+        display: flex;
+        align-items: center;
+        gap: 12px;
+    }
+    
+    .section-title i {
+        opacity: 0.8;
+    }
+    
+    .stat-card-6 .stat-icon {
+        background: linear-gradient(135deg, rgba(16, 185, 129, 0.15), rgba(16, 185, 129, 0.05));
+        color: #10b981;
+    }
+    
+    .stat-card-7 .stat-icon {
+        background: linear-gradient(135deg, rgba(59, 130, 246, 0.15), rgba(59, 130, 246, 0.05));
+        color: #3b82f6;
+    }
+    
+    .stat-card-8 .stat-icon {
+        background: linear-gradient(135deg, rgba(239, 68, 68, 0.15), rgba(239, 68, 68, 0.05));
+        color: #ef4444;
+    }
+    
+    .stat-card-9 .stat-icon {
+        background: linear-gradient(135deg, rgba(168, 85, 247, 0.15), rgba(168, 85, 247, 0.05));
+        color: #a855f7;
+    }
+    
+    .stat-badge {
+        position: absolute;
+        top: 20px;
+        right: 20px;
+        background: rgba(255, 255, 255, 0.9);
+        padding: 4px 12px;
+        border-radius: 30px;
+        font-size: 14px;
+        font-weight: 700;
+        color: var(--dark);
+    }
+    
+    .badge-warning {
+        background: rgba(239, 68, 68, 0.15);
+        color: #ef4444;
+    }
+    
+    .stat-card {
+        position: relative;
+    }
+</style>
+{% endblock %}

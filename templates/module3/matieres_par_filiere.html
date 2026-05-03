@@ -1,0 +1,192 @@
+{% extends "base.html" %}
+
+{% block title %}Matières par Filière - Module 3{% endblock %}
+
+{% block breadcrumb %}
+<a href="{{ url_for('index') }}">Accueil</a>
+<a href="{{ url_for('module3_index') }}">Module 3</a>
+<span>Matières par Filière</span>
+{% endblock %}
+
+{% block content %}
+<div class="page-header">
+    <h1 class="page-title">
+        <i class="fas fa-th-list" style="margin-right: 12px;"></i>
+        Matières par Filière
+    </h1>
+</div>
+
+<!-- Filtre -->
+<div class="filter-bar">
+    <form method="GET" style="display: flex; align-items: center; gap: 15px;">
+        <label><i class="fas fa-filter"></i> Filtrer :</label>
+        <select name="filiere" class="form-control" style="width: 250px;" onchange="this.form.submit()">
+            <option value="">Toutes les filières</option>
+            {% for filiere in filieres %}
+            <option value="{{ filiere.code_filiere }}" {{ 'selected' if selected_filiere == filiere.code_filiere else '' }}>
+                {{ filiere.Libele_filiere }}
+            </option>
+            {% endfor %}
+        </select>
+        {% if selected_filiere %}
+        <a href="{{ url_for('module3_matieres_par_filiere') }}" class="btn btn-outline btn-sm">
+            <i class="fas fa-times"></i> Réinitialiser
+        </a>
+        {% endif %}
+    </form>
+</div>
+
+<!-- Résultats -->
+{% for key, data in filieres_dict.items() %}
+<div class="filiere-block">
+    <div class="filiere-header">
+        <h2>
+            <i class="fas fa-building"></i>
+            {{ data.filiere }}
+        </h2>
+        <span class="badge-info">{{ data.nbre_etudiant }} étudiants</span>
+    </div>
+    
+    <div class="table-wrapper">
+        <table>
+            <thead>
+                <tr>
+                    <th>Matière</th>
+                    <th>Volume Horaire</th>
+                    <th>Séances</th>
+                    <th>Absences</th>
+                    <th>Justifiées</th>
+                    <th>Taux absence</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for matiere in data.matieres %}
+                <tr>
+                    <td><strong>{{ matiere.Nom_matiere }}</strong></td>
+                    <td>
+                        <span class="badge-volume">{{ matiere.Volume_horaire }}h</span>
+                    </td>
+                    <td>{{ matiere.nb_seances or 0 }}</td>
+                    <td><span class="text-danger">{{ matiere.nb_absences or 0 }}</span></td>
+                    <td><span class="text-warning">{{ matiere.nb_justifiees or 0 }}</span></td>
+                    <td>
+                        {% if matiere.nb_seances and matiere.nb_seances > 0 %}
+                            {% set taux = ((matiere.nb_absences or 0) / (matiere.nb_seances * data.nbre_etudiant) * 100) | round(1) %}
+                            <div class="progress-small">
+                                <div class="progress-fill-danger" style="width: {{ taux }}%">{{ taux }}%</div>
+                            </div>
+                        {% else %}
+                            <span class="text-muted">-</span>
+                        {% endif %}
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+{% endfor %}
+
+{% if not filieres_dict %}
+<div class="empty-state">
+    <i class="fas fa-th-list" style="font-size: 64px; opacity: 0.3;"></i>
+    <h3>Aucune donnée</h3>
+    <p>Aucune matière trouvée pour ce filtre</p>
+</div>
+{% endif %}
+
+<style>
+    .filter-bar {
+        background: rgba(255, 255, 255, 0.95);
+        backdrop-filter: blur(20px);
+        border-radius: 12px;
+        padding: 15px 20px;
+        margin-bottom: 25px;
+        border: 1px solid rgba(255, 255, 255, 0.3);
+    }
+    
+    .filiere-block {
+        background: rgba(255, 255, 255, 0.95);
+        backdrop-filter: blur(20px);
+        border-radius: 16px;
+        padding: 25px;
+        margin-bottom: 25px;
+        border: 1px solid rgba(255, 255, 255, 0.3);
+    }
+    
+    .filiere-header {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        margin-bottom: 20px;
+    }
+    
+    .filiere-header h2 {
+        font-size: 20px;
+        color: var(--dark);
+        display: flex;
+        align-items: center;
+        gap: 10px;
+    }
+    
+    .badge-info {
+        background: rgba(99, 102, 241, 0.1);
+        color: var(--primary);
+        padding: 6px 14px;
+        border-radius: 20px;
+        font-weight: 600;
+        font-size: 13px;
+    }
+    
+    .badge-volume {
+        background: rgba(20, 184, 166, 0.1);
+        color: #0d9488;
+        padding: 4px 10px;
+        border-radius: 20px;
+        font-weight: 600;
+    }
+    
+    .text-danger { color: #ef4444; font-weight: 600; }
+    .text-warning { color: #f59e0b; font-weight: 600; }
+    .text-muted { color: var(--gray); }
+    
+    .progress-small {
+        background: #e5e7eb;
+        border-radius: 20px;
+        height: 20px;
+        overflow: hidden;
+        width: 100%;
+    }
+    
+    .progress-fill-danger {
+        background: #ef4444;
+        color: white;
+        font-size: 11px;
+        font-weight: 600;
+        height: 100%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        min-width: 35px;
+    }
+    
+    .btn-sm {
+        padding: 8px 16px;
+        font-size: 13px;
+    }
+    
+    .empty-state {
+        text-align: center;
+        padding: 60px 20px;
+    }
+    
+    .empty-state h3 {
+        margin: 20px 0 10px;
+        color: var(--dark);
+    }
+    
+    .empty-state p {
+        color: var(--gray);
+    }
+</style>
+{% endblock %}

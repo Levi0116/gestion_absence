@@ -1,0 +1,214 @@
+{% extends "base.html" %}
+
+{% block title %}Absences par Étudiant - Module 3{% endblock %}
+
+{% block breadcrumb %}
+<a href="{{ url_for('index') }}">Accueil</a>
+<a href="{{ url_for('module3_index') }}">Module 3</a>
+<span>Par Étudiant</span>
+{% endblock %}
+
+{% block content %}
+<div class="page-header">
+    <h1 class="page-title">
+        <i class="fas fa-user-clock" style="margin-right: 12px;"></i>
+        Absences par Étudiant
+    </h1>
+    <a href="{{ url_for('module3_export_absences_etudiant', filiere=selected_filiere, periode=selected_periode) }}" class="btn btn-primary">
+        <i class="fas fa-download"></i>
+        Exporter CSV
+    </a>
+</div>
+
+<!-- Filtres et recherche -->
+<div class="filter-bar">
+    <form method="GET" style="display: flex; align-items: center; gap: 15px; flex-wrap: wrap;">
+        <div class="search-box">
+            <i class="fas fa-search"></i>
+            <input type="text" name="search" class="form-control" 
+                   placeholder="Rechercher un étudiant..." 
+                   value="{{ search }}"
+                   style="padding-left: 35px;">
+        </div>
+        
+        <select name="filiere" class="form-control" style="width: 200px;" onchange="this.form.submit()">
+            <option value="">Toutes filières</option>
+            {% for filiere in filieres %}
+            <option value="{{ filiere.code_filiere }}" {{ 'selected' if selected_filiere == filiere.code_filiere else '' }}>
+                {{ filiere.Libele_filiere }}
+            </option>
+            {% endfor %}
+        </select>
+        
+        <select name="periode" class="form-control" style="width: 250px;" onchange="this.form.submit()">
+            <option value="">Toutes périodes</option>
+            {% for periode in periodes %}
+            <option value="{{ periode.id_periode }}" {{ 'selected' if selected_periode == periode.id_periode else '' }}>
+                {{ periode.Libelle_periode }}
+            </option>
+            {% endfor %}
+        </select>
+        
+        <button type="submit" class="btn btn-primary btn-sm">
+            <i class="fas fa-search"></i> Filtrer
+        </button>
+        
+        {% if selected_filiere or selected_periode or search %}
+        <a href="{{ url_for('module3_absences_par_etudiant') }}" class="btn btn-outline btn-sm">
+            <i class="fas fa-times"></i> Réinitialiser
+        </a>
+        {% endif %}
+    </form>
+</div>
+
+<!-- Résultats -->
+{% if etudiants %}
+<div class="table-wrapper">
+    <table>
+        <thead>
+            <tr>
+                <th>Étudiant</th>
+                <th>Filière</th>
+                <th>Séances</th>
+                <th>Présences</th>
+                <th>Absences</th>
+                <th>Justifiées</th>
+                <th>Pénalité</th>
+                <th>Taux Présence</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for e in etudiants %}
+            <tr class="{{ 'row-danger' if e.nb_absences and e.nb_absences > 3 else '' }}">
+                <td>
+                    <strong>{{ e.Prenom }} {{ e.Nom }}</strong>
+                    <br><small>{{ 'Féminin' if e.Sexe == 'F' else 'Masculin' }}</small>
+                </td>
+                <td>{{ e.Libele_filiere }}</td>
+                <td>{{ e.total_seances or 0 }}</td>
+                <td><span class="text-success">{{ e.nb_presences or 0 }}</span></td>
+                <td><span class="text-danger">{{ e.nb_absences or 0 }}</span></td>
+                <td><span class="text-warning">{{ e.nb_justifiees or 0 }}</span></td>
+                <td>
+                    <span class="penalite-badge {{ 'penalite-high' if e.penalite and e.penalite > 1 else '' }}">
+                        -{{ e.penalite or 0 }} pts
+                    </span>
+                </td>
+                <td>
+                    <div class="progress-small">
+                        <div class="progress-fill" style="width: {{ e.taux_presence or 0 }}%">
+                            {{ e.taux_presence or 0 }}%
+                        </div>
+                    </div>
+                </td>
+                <td class="actions">
+                    <a href="{{ url_for('module3_etudiant_detail', id=e.id_etudiant) }}" class="btn-icon" title="Détail complet" style="background: #8b5cf6; color: white;">
+                        <i class="fas fa-eye"></i>
+                    </a>
+                    <a href="{{ url_for('generer_message', etudiant=e.id_etudiant) }}" class="btn-icon" title="Message" style="background: #3b82f6; color: white;">
+                        <i class="fas fa-envelope"></i>
+                    </a>
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+{% else %}
+<div class="empty-state">
+    <i class="fas fa-user-slash" style="font-size: 64px; opacity: 0.3;"></i>
+    <h3>Aucun résultat</h3>
+    <p>Aucun étudiant trouvé pour ces critères</p>
+</div>
+{% endif %}
+
+<style>
+    .filter-bar {
+        background: rgba(255, 255, 255, 0.95);
+        backdrop-filter: blur(20px);
+        border-radius: 12px;
+        padding: 15px 20px;
+        margin-bottom: 25px;
+        border: 1px solid rgba(255, 255, 255, 0.3);
+    }
+    
+    .search-box {
+        position: relative;
+    }
+    
+    .search-box i {
+        position: absolute;
+        left: 12px;
+        top: 50%;
+        transform: translateY(-50%);
+        color: var(--gray);
+    }
+    
+    .search-box input {
+        padding-left: 35px !important;
+        width: 250px;
+    }
+    
+    .text-success { color: #10b981; font-weight: 600; }
+    .text-danger { color: #ef4444; font-weight: 600; }
+    .text-warning { color: #f59e0b; font-weight: 600; }
+    
+    .penalite-badge {
+        background: rgba(239, 68, 68, 0.1);
+        color: #dc2626;
+        padding: 4px 10px;
+        border-radius: 20px;
+        font-weight: 600;
+        font-size: 13px;
+    }
+    
+    .penalite-high {
+        background: rgba(239, 68, 68, 0.2);
+        font-size: 14px;
+    }
+    
+    .progress-small {
+        background: #e5e7eb;
+        border-radius: 20px;
+        height: 22px;
+        overflow: hidden;
+        width: 100%;
+    }
+    
+    .progress-fill {
+        background: linear-gradient(90deg, #10b981, #059669);
+        color: white;
+        font-size: 11px;
+        font-weight: 600;
+        height: 100%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        min-width: 40px;
+    }
+    
+    .row-danger {
+        background: rgba(239, 68, 68, 0.03);
+    }
+    
+    .btn-sm {
+        padding: 8px 16px;
+        font-size: 13px;
+    }
+    
+    .empty-state {
+        text-align: center;
+        padding: 60px 20px;
+    }
+    
+    .empty-state h3 {
+        margin: 20px 0 10px;
+        color: var(--dark);
+    }
+    
+    .empty-state p {
+        color: var(--gray);
+    }
+</style>
+{% endblock %}

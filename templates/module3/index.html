@@ -1,0 +1,224 @@
+{% extends "base.html" %}
+
+{% block title %}Module 3 - Édition & Rapports{% endblock %}
+
+{% block breadcrumb %}
+<a href="{{ url_for('index') }}">Accueil</a>
+<span>Module Édition</span>
+{% endblock %}
+
+{% block content %}
+<div class="module3-dashboard">
+    <!-- Hero -->
+    <div class="dashboard-hero" style="background: linear-gradient(135deg, #8b5cf6, #6366f1);">
+        <div class="hero-content">
+            <h1 class="hero-title">
+                <span class="title-line">Module Édition</span>
+                <span class="title-line highlight">& Rapports</span>
+            </h1>
+            <p class="hero-subtitle">
+                Consultation détaillée • Filtres avancés • Export des données
+            </p>
+        </div>
+        <div class="hero-illustration">
+            <i class="fas fa-file-invoice"></i>
+        </div>
+    </div>
+    
+    <!-- Statistiques globales -->
+    <div class="stats-mini">
+        <div class="stat-box">
+            <i class="fas fa-users"></i>
+            <div>
+                <span class="stat-value">{{ stats.total_etudiants or 0 }}</span>
+                <span class="stat-label">Étudiants</span>
+            </div>
+        </div>
+        <div class="stat-box">
+            <i class="fas fa-calendar-check"></i>
+            <div>
+                <span class="stat-value">{{ stats.total_seances or 0 }}</span>
+                <span class="stat-label">Séances</span>
+            </div>
+        </div>
+        <div class="stat-box stat-danger">
+            <i class="fas fa-times-circle"></i>
+            <div>
+                <span class="stat-value">{{ stats.total_absences or 0 }}</span>
+                <span class="stat-label">Absences non just.</span>
+            </div>
+        </div>
+        <div class="stat-box stat-warning">
+            <i class="fas fa-check-circle"></i>
+            <div>
+                <span class="stat-value">{{ stats.total_justifiees or 0 }}</span>
+                <span class="stat-label">Absences justifiées</span>
+            </div>
+        </div>
+        <div class="stat-box stat-success">
+            <i class="fas fa-percentage"></i>
+            <div>
+                <span class="stat-value">{{ stats.taux_presence_moyen or 0 }}%</span>
+                <span class="stat-label">Taux présence moyen</span>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Filière la plus absentéiste -->
+    {% if stats.filiere_plus_absenteiste %}
+    <div class="alert-card">
+        <i class="fas fa-exclamation-circle"></i>
+        <div>
+            <strong>Filière la plus absentéiste</strong>
+            <p>{{ stats.filiere_plus_absenteiste }}</p>
+        </div>
+    </div>
+    {% endif %}
+    
+    <!-- Accès rapide -->
+    <h2 class="section-title">
+        <i class="fas fa-rocket"></i> Accès rapide
+    </h2>
+    
+    <div class="stats-grid">
+        <a href="{{ url_for('module3_matieres_par_filiere') }}" class="stat-card stat-card-1">
+            <div class="stat-icon">
+                <i class="fas fa-th-list"></i>
+            </div>
+            <div class="stat-content">
+                <h3>Matières par filière</h3>
+                <p>Catalogue détaillé avec volumes horaires</p>
+            </div>
+            <span class="stat-link">Consulter <i class="fas fa-arrow-right"></i></span>
+        </a>
+        
+        <a href="{{ url_for('module3_absences_par_filiere_periode') }}" class="stat-card stat-card-2">
+            <div class="stat-icon">
+                <i class="fas fa-filter"></i>
+            </div>
+            <div class="stat-content">
+                <h3>Absences par filière/période</h3>
+                <p>Statistiques croisées avec taux</p>
+            </div>
+            <span class="stat-link">Consulter <i class="fas fa-arrow-right"></i></span>
+        </a>
+        
+        <a href="{{ url_for('module3_absences_par_etudiant') }}" class="stat-card stat-card-3">
+            <div class="stat-icon">
+                <i class="fas fa-user-clock"></i>
+            </div>
+            <div class="stat-content">
+                <h3>Par étudiant</h3>
+                <p>Recherche et détail individuel</p>
+            </div>
+            <span class="stat-link">Consulter <i class="fas fa-arrow-right"></i></span>
+        </a>
+        
+        <a href="{{ url_for('module3_absences_justifiees') }}" class="stat-card stat-card-4">
+            <div class="stat-icon">
+                <i class="fas fa-check-double"></i>
+            </div>
+            <div class="stat-content">
+                <h3>Absences justifiées</h3>
+                <p>Liste complète avec motifs</p>
+            </div>
+            <span class="stat-link">Consulter <i class="fas fa-arrow-right"></i></span>
+        </a>
+    </div>
+</div>
+
+<style>
+    .module3-dashboard .dashboard-hero {
+        background: linear-gradient(135deg, #8b5cf6, #6366f1);
+    }
+    
+    .stats-mini {
+        display: grid;
+        grid-template-columns: repeat(5, 1fr);
+        gap: 15px;
+        margin-bottom: 25px;
+    }
+    
+    .stat-box {
+        background: rgba(255, 255, 255, 0.95);
+        backdrop-filter: blur(20px);
+        border-radius: 16px;
+        padding: 20px;
+        border: 1px solid rgba(255, 255, 255, 0.3);
+        display: flex;
+        align-items: center;
+        gap: 15px;
+    }
+    
+    .stat-box i {
+        font-size: 32px;
+        color: var(--primary);
+        opacity: 0.7;
+    }
+    
+    .stat-danger i { color: #ef4444; }
+    .stat-warning i { color: #f59e0b; }
+    .stat-success i { color: #10b981; }
+    
+    .stat-value {
+        display: block;
+        font-size: 24px;
+        font-weight: 700;
+        color: var(--dark);
+    }
+    
+    .stat-label {
+        font-size: 12px;
+        color: var(--gray);
+    }
+    
+    .alert-card {
+        background: rgba(239, 68, 68, 0.1);
+        border: 1px solid rgba(239, 68, 68, 0.3);
+        border-radius: 16px;
+        padding: 20px 25px;
+        margin-bottom: 30px;
+        display: flex;
+        align-items: center;
+        gap: 15px;
+    }
+    
+    .alert-card i {
+        font-size: 28px;
+        color: #ef4444;
+    }
+    
+    .alert-card strong {
+        display: block;
+        color: var(--dark);
+        margin-bottom: 5px;
+    }
+    
+    .alert-card p {
+        color: var(--gray);
+        margin: 0;
+    }
+    
+    .section-title {
+        color: white;
+        margin: 30px 0 20px;
+        font-size: 22px;
+        font-weight: 600;
+        display: flex;
+        align-items: center;
+        gap: 12px;
+    }
+    
+    @media (max-width: 1200px) {
+        .stats-mini {
+            grid-template-columns: repeat(3, 1fr);
+        }
+    }
+    
+    @media (max-width: 768px) {
+        .stats-mini {
+            grid-template-columns: repeat(2, 1fr);
+        }
+    }
+</style>
+{% endblock %}

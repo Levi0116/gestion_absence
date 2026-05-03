@@ -1,0 +1,222 @@
+{% extends "base.html" %}
+
+{% block title %}Détail - {{ etudiant.Prenom }} {{ etudiant.Nom }}{% endblock %}
+
+{% block breadcrumb %}
+<a href="{{ url_for('index') }}">Accueil</a>
+<a href="{{ url_for('module3_index') }}">Module 3</a>
+<a href="{{ url_for('module3_absences_par_etudiant') }}">Par Étudiant</a>
+<span>Détail</span>
+{% endblock %}
+
+{% block content %}
+<div class="page-header">
+    <h1 class="page-title">
+        <i class="fas fa-id-card" style="margin-right: 12px;"></i>
+        Dossier de {{ etudiant.Prenom }} {{ etudiant.Nom }}
+    </h1>
+    <a href="{{ url_for('generer_message', etudiant=etudiant.id_etudiant) }}" class="btn btn-primary">
+        <i class="fas fa-envelope"></i>
+        Message
+    </a>
+</div>
+
+<!-- Infos étudiant -->
+<div class="info-card">
+    <div class="info-avatar {{ 'female' if etudiant.Sexe == 'F' else 'male' }}">
+        {{ etudiant.Prenom[0] }}{{ etudiant.Nom[0] }}
+    </div>
+    <div class="info-details">
+        <h2>{{ etudiant.Prenom }} {{ etudiant.Nom }}</h2>
+        <p>
+            <i class="fas fa-building"></i> {{ etudiant.Libele_filiere }} |
+            <i class="fas fa-venus-mars"></i> {{ 'Féminin' if etudiant.Sexe == 'F' else 'Masculin' }}
+        </p>
+    </div>
+</div>
+
+<!-- Résumé par matière -->
+<h2 class="section-title">
+    <i class="fas fa-book"></i> Résumé par matière
+</h2>
+
+<div class="table-wrapper">
+    {% if resume %}
+    <table>
+        <thead>
+            <tr>
+                <th>Matière</th>
+                <th>Séances</th>
+                <th>Présences</th>
+                <th>Absences</th>
+                <th>Justifiées</th>
+                <th>Pénalité</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for r in resume %}
+            <tr>
+                <td><strong>{{ r.Nom_matiere }}</strong></td>
+                <td>{{ r.nb_seances or 0 }}</td>
+                <td><span class="text-success">{{ r.nb_presences or 0 }}</span></td>
+                <td><span class="text-danger">{{ r.nb_absences or 0 }}</span></td>
+                <td><span class="text-warning">{{ r.nb_justifiees or 0 }}</span></td>
+                <td>-{{ r.penalite or 0 }} pts</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+    {% else %}
+    <div class="empty-state-small">
+        <p>Aucune donnée de présence</p>
+    </div>
+    {% endif %}
+</div>
+
+<!-- Détail chronologique -->
+<h2 class="section-title" style="margin-top: 30px;">
+    <i class="fas fa-history"></i> Historique détaillé
+</h2>
+
+<div class="table-wrapper">
+    {% if details %}
+    <table>
+        <thead>
+            <tr>
+                <th>Date</th>
+                <th>Horaire</th>
+                <th>Matière</th>
+                <th>Enseignant</th>
+                <th>Période</th>
+                <th>Statut</th>
+                <th>Motif</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for d in details %}
+            <tr>
+                <td>{{ d.Date_enseignement.strftime('%d/%m/%Y') if d.Date_enseignement else '' }}</td>
+                <td>
+                    {% if d.Horaire_debut %}
+                        {{ d.Horaire_debut.strftime('%H:%M') if d.Horaire_debut is not string else d.Horaire_debut }} - 
+                        {{ d.Horaire_fin.strftime('%H:%M') if d.Horaire_fin is not string else d.Horaire_fin }}
+                    {% endif %}
+                </td>
+                <td>{{ d.Nom_matiere }}</td>
+                <td>{{ d.prenom_enseignant }} {{ d.nom_enseignant }}</td>
+                <td>{{ d.Libelle_periode }}</td>
+                <td>
+                    {% if d.presence == 'P' %}
+                    <span class="badge badge-present">Présent</span>
+                    {% elif d.presence == 'A' %}
+                    <span class="badge badge-absent">Absent</span>
+                    {% elif d.presence == 'J' %}
+                    <span class="badge badge-justifie">Justifié</span>
+                    {% endif %}
+                </td>
+                <td>
+                    {% if d.motif_justification %}
+                        {{ d.motif_justification }}
+                        <br><small>{{ d.date_justification.strftime('%d/%m/%Y') if d.date_justification else '' }}</small>
+                    {% else %}
+                        -
+                    {% endif %}
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+    {% else %}
+    <div class="empty-state-small">
+        <p>Aucun historique disponible</p>
+    </div>
+    {% endif %}
+</div>
+
+<div class="form-actions" style="margin-top: 20px;">
+    <a href="{{ url_for('module3_absences_par_etudiant') }}" class="btn btn-outline">
+        <i class="fas fa-arrow-left"></i> Retour
+    </a>
+</div>
+
+<style>
+    .info-card {
+        background: rgba(255, 255, 255, 0.95);
+        backdrop-filter: blur(20px);
+        border-radius: 16px;
+        padding: 30px;
+        margin-bottom: 25px;
+        border: 1px solid rgba(255, 255, 255, 0.3);
+        display: flex;
+        align-items: center;
+        gap: 25px;
+    }
+    
+    .info-avatar {
+        width: 80px;
+        height: 80px;
+        border-radius: 20px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 32px;
+        font-weight: 700;
+        color: white;
+        flex-shrink: 0;
+    }
+    
+    .info-avatar.male {
+        background: linear-gradient(135deg, #3b82f6, #1d4ed8);
+    }
+    
+    .info-avatar.female {
+        background: linear-gradient(135deg, #ec4899, #be185d);
+    }
+    
+    .info-details h2 {
+        color: var(--dark);
+        margin-bottom: 8px;
+    }
+    
+    .info-details p {
+        color: var(--gray);
+    }
+    
+    .info-details i {
+        margin-right: 5px;
+        color: var(--primary);
+    }
+    
+    .section-title {
+        color: white;
+        margin: 0 0 20px;
+        font-size: 20px;
+        font-weight: 600;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+    }
+    
+    .text-success { color: #10b981; font-weight: 600; }
+    .text-danger { color: #ef4444; font-weight: 600; }
+    .text-warning { color: #f59e0b; font-weight: 600; }
+    
+    .badge {
+        display: inline-block;
+        padding: 5px 12px;
+        border-radius: 20px;
+        font-size: 12px;
+        font-weight: 500;
+    }
+    
+    .badge-present { background: rgba(16, 185, 129, 0.15); color: #059669; }
+    .badge-absent { background: rgba(239, 68, 68, 0.15); color: #dc2626; }
+    .badge-justifie { background: rgba(245, 158, 11, 0.15); color: #d97706; }
+    
+    .empty-state-small {
+        text-align: center;
+        padding: 30px;
+        color: var(--gray);
+    }
+</style>
+{% endblock %}

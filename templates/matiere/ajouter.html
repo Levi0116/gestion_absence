@@ -1,0 +1,82 @@
+{% extends "base.html" %}
+
+{% block title %}Ajouter une Matière{% endblock %}
+
+{% block breadcrumb %}
+<a href="{{ url_for('index') }}">Accueil</a>
+<a href="{{ url_for('matieres_index') }}">Matières</a>
+<span>Ajouter</span>
+{% endblock %}
+
+{% block content %}
+<div class="page-header">
+    <h1 class="page-title">
+        <i class="fas fa-plus-circle" style="margin-right: 12px;"></i>
+        Nouvelle matière
+    </h1>
+</div>
+
+<div class="form-container">
+    <form method="POST" id="matiereForm">
+        <div class="form-group">
+            <label for="nom_matiere">
+                <i class="fas fa-book"></i> Nom de la matière *
+            </label>
+            <input type="text" 
+                   id="nom_matiere" 
+                   name="nom_matiere" 
+                   class="form-control" 
+                   required 
+                   placeholder="Ex: Programmation Web"
+                   autocomplete="off">
+            <small class="form-hint">Le nom doit être unique et descriptif</small>
+        </div>
+
+        <div class="info-box">
+            <i class="fas fa-info-circle"></i>
+            <div>
+                <strong>Information</strong>
+                <p>Une fois la matière créée, vous pourrez l'associer à une ou plusieurs filières dans la section "Associations".</p>
+            </div>
+        </div>
+
+        <div class="form-actions">
+            <button type="submit" class="btn btn-success">
+                <i class="fas fa-save"></i> Enregistrer
+            </button>
+            <a href="{{ url_for('matieres_index') }}" class="btn btn-outline">
+                <i class="fas fa-times"></i> Annuler
+            </a>
+        </div>
+    </form>
+</div>
+
+<style>
+    .info-box {
+        display: flex;
+        gap: 15px;
+        padding: 18px;
+        background: rgba(99, 102, 241, 0.08);
+        border-radius: 12px;
+        margin: 25px 0;
+        border-left: 4px solid var(--primary);
+    }
+    
+    .info-box i {
+        font-size: 24px;
+        color: var(--primary);
+    }
+    
+    .info-box strong {
+        display: block;
+        margin-bottom: 5px;
+        color: var(--dark);
+    }
+    
+    .info-box p {
+        color: var(--gray);
+        font-size: 14px;
+        margin: 0;
+    }
+</style>
+{% endblock %}

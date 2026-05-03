@@ -1,0 +1,163 @@
+{% extends "base.html" %}
+
+{% block title %}Étudiants - Gestion des Absences{% endblock %}
+
+{% block breadcrumb %}
+<a href="{{ url_for('index') }}">Accueil</a>
+<span>Étudiants</span>
+{% endblock %}
+
+{% block content %}
+<div class="page-header">
+    <h1 class="page-title">
+        <i class="fas fa-users" style="margin-right: 12px;"></i>
+        Gestion des Étudiants
+    </h1>
+    <a href="{{ url_for('etudiant_ajouter') }}" class="btn btn-primary">
+        <i class="fas fa-plus"></i>
+        Nouvel étudiant
+    </a>
+</div>
+
+<!-- Filtre par filière -->
+<div class="filter-bar">
+    <label><i class="fas fa-filter"></i> Filtrer par filière :</label>
+    <select id="filiereFilter" class="form-control" style="width: auto; display: inline-block; margin-left: 10px;">
+        <option value="">Toutes les filières</option>
+        {% for filiere in filieres %}
+        <option value="{{ filiere.code_filiere }}">{{ filiere.Libele_filiere }}</option>
+        {% endfor %}
+    </select>
+</div>
+
+<div class="table-wrapper">
+    {% if etudiants %}
+    <table id="etudiantsTable">
+        <thead>
+            <tr>
+                <th>ID</th>
+                <th>Nom</th>
+                <th>Prénom</th>
+                <th>Sexe</th>
+                <th>Filière</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for etudiant in etudiants %}
+            <tr data-filiere="{{ etudiant.code_filiere }}">
+                <td><span class="badge-id">{{ etudiant.id_etudiant }}</span></td>
+                <td><strong>{{ etudiant.Nom }}</strong></td>
+                <td>{{ etudiant.Prenom }}</td>
+                <td>
+                    <span class="sexe-badge sexe-{{ 'f' if etudiant.Sexe == 'F' else 'm' }}">
+                        <i class="fas fa-{{ 'venus' if etudiant.Sexe == 'F' else 'mars' }}"></i>
+                        {{ 'F' if etudiant.Sexe == 'F' else 'M' }}
+                    </span>
+                </td>
+                <td>{{ etudiant.Libele_filiere }}</td>
+                <td class="actions">
+                    <a href="{{ url_for('etudiant_absences', id=etudiant.id_etudiant) }}" class="btn-icon" title="Voir les absences" style="background: #f59e0b; color: white;">
+                        <i class="fas fa-clock"></i>
+                    </a>
+                    <a href="{{ url_for('generer_message', etudiant=etudiant.id_etudiant) }}" class="btn-icon" title="Générer un message" style="background: #3b82f6; color: white;">
+                        <i class="fas fa-envelope"></i>
+                    </a>
+                    <a href="{{ url_for('etudiant_modifier', id=etudiant.id_etudiant) }}" class="btn-icon" title="Modifier">
+                        <i class="fas fa-edit"></i>
+                    </a>
+                    <a href="{{ url_for('etudiant_supprimer', id=etudiant.id_etudiant) }}" 
+                       class="btn-icon btn-danger" 
+                       onclick="return confirm('Supprimer cet étudiant ?')" 
+                       title="Supprimer">
+                        <i class="fas fa-trash"></i>
+                    </a>
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+    {% else %}
+    <div class="empty-state">
+        <i class="fas fa-user-graduate" style="font-size: 64px; opacity: 0.3;"></i>
+        <h3>Aucun étudiant</h3>
+        <p>Commencez par inscrire des étudiants</p>
+        <a href="{{ url_for('etudiant_ajouter') }}" class="btn btn-primary">
+            <i class="fas fa-plus"></i> Ajouter un étudiant
+        </a>
+    </div>
+    {% endif %}
+</div>
+
+<style>
+    .filter-bar {
+        background: rgba(255, 255, 255, 0.95);
+        backdrop-filter: blur(20px);
+        border-radius: 12px;
+        padding: 15px 20px;
+        margin-bottom: 20px;
+        border: 1px solid rgba(255, 255, 255, 0.3);
+        color: var(--dark);
+    }
+    
+    .badge-id {
+        display: inline-block;
+        padding: 4px 10px;
+        background: var(--gray);
+        color: white;
+        border-radius: 20px;
+        font-size: 12px;
+        font-weight: 600;
+    }
+    
+    .sexe-badge {
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        padding: 5px 12px;
+        border-radius: 20px;
+        font-size: 12px;
+        font-weight: 500;
+    }
+    
+    .sexe-m {
+        background: rgba(59, 130, 246, 0.1);
+        color: #3b82f6;
+    }
+    
+    .sexe-f {
+        background: rgba(236, 72, 153, 0.1);
+        color: #ec4899;
+    }
+    
+    .empty-state {
+        text-align: center;
+        padding: 60px 20px;
+    }
+    
+    .empty-state h3 {
+        margin: 20px 0 10px;
+        color: var(--dark);
+    }
+    
+    .empty-state p {
+        color: var(--gray);
+        margin-bottom: 25px;
+    }
+</style>
+
+<script>
+document.getElementById('filiereFilter').addEventListener('change', function() {
+    const filiere = this.value;
+    const rows = document.querySelectorAll('#etudiantsTable tbody tr');
+    
+    rows.forEach(row => {
+        if (!filiere || row.dataset.filiere === filiere) {
+            row.style.display = '';
+        } else {
+            row.style.display = 'none';
+        }
+    });
+});
+</script>
+{% endblock %}

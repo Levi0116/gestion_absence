@@ -1,0 +1,67 @@
+{% extends "base.html" %}
+
+{% block title %}Périodes - Gestion des Absences{% endblock %}
+
+{% block breadcrumb %}
+<a href="{{ url_for('index') }}">Accueil</a>
+<span>Périodes</span>
+{% endblock %}
+
+{% block content %}
+<div class="page-header">
+    <h1 class="page-title">
+        <i class="fas fa-calendar-alt" style="margin-right: 12px;"></i>
+        Périodes d'évaluation
+    </h1>
+    <a href="{{ url_for('periode_ajouter') }}" class="btn btn-primary">
+        <i class="fas fa-plus"></i>
+        Nouvelle période
+    </a>
+</div>
+
+<div class="table-wrapper">
+    {% if periodes %}
+    <table>
+        <thead>
+            <tr>
+                <th>ID</th>
+                <th>Libellé</th>
+                <th>Date début</th>
+                <th>Date fin</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for periode in periodes %}
+            <tr>
+                <td><span class="badge">{{ periode.id_periode }}</span></td>
+                <td><strong>{{ periode.Libelle_periode }}</strong></td>
+                <td>{{ periode.Date_debut.strftime('%d/%m/%Y') if periode.Date_debut else '' }}</td>
+                <td>{{ periode.Date_fin.strftime('%d/%m/%Y') if periode.Date_fin else '' }}</td>
+                <td class="actions">
+                    <a href="{{ url_for('periode_modifier', id=periode.id_periode) }}" class="btn-icon" title="Modifier">
+                        <i class="fas fa-edit"></i>
+                    </a>
+                    <a href="{{ url_for('periode_supprimer', id=periode.id_periode) }}" 
+                       class="btn-icon btn-danger" 
+                       onclick="return confirm('Supprimer cette période ?')" 
+                       title="Supprimer">
+                        <i class="fas fa-trash"></i>
+                    </a>
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+    {% else %}
+    <div class="empty-state">
+        <i class="fas fa-calendar-times"></i>
+        <h3>Aucune période</h3>
+        <p>Commencez par ajouter une période d'évaluation</p>
+        <a href="{{ url_for('periode_ajouter') }}" class="btn btn-primary">
+            <i class="fas fa-plus"></i> Ajouter une période
+        </a>
+    </div>
+    {% endif %}
+</div>
+{% endblock %}

@@ -1,0 +1,85 @@
+{% extends "base.html" %}
+
+{% block title %}Modifier une Période{% endblock %}
+
+{% block breadcrumb %}
+<a href="{{ url_for('index') }}">Accueil</a>
+<a href="{{ url_for('periodes_index') }}">Périodes</a>
+<span>Modifier</span>
+{% endblock %}
+
+{% block content %}
+<div class="page-header">
+    <h1 class="page-title">
+        <i class="fas fa-edit" style="margin-right: 12px;"></i>
+        Modifier la période
+    </h1>
+</div>
+
+<div class="form-container">
+    <form method="POST" id="periodeForm" onsubmit="return validateForm('periodeForm')">
+        <div class="form-group">
+            <label for="libelle">
+                <i class="fas fa-tag"></i> Libellé de la période *
+            </label>
+            <input type="text" 
+                   id="libelle" 
+                   name="libelle" 
+                   class="form-control" 
+                   value="{{ periode.Libelle_periode }}"
+                   required 
+                   placeholder="Ex: Semestre 1 - 2024/2025"
+                   autocomplete="off">
+        </div>
+
+        <div class="form-row">
+            <div class="form-group">
+                <label for="date_debut">
+                    <i class="fas fa-calendar"></i> Date de début *
+                </label>
+                <input type="date" 
+                       id="date_debut" 
+                       name="date_debut" 
+                       class="form-control" 
+                       value="{{ periode.Date_debut }}"
+                       required>
+            </div>
+
+            <div class="form-group">
+                <label for="date_fin">
+                    <i class="fas fa-calendar-check"></i> Date de fin *
+                </label>
+                <input type="date" 
+                       id="date_fin" 
+                       name="date_fin" 
+                       class="form-control" 
+                       value="{{ periode.Date_fin }}"
+                       required>
+            </div>
+        </div>
+
+        <div class="form-actions">
+            <button type="submit" class="btn btn-success">
+                <i class="fas fa-save"></i> Mettre à jour
+            </button>
+            <a href="{{ url_for('periodes_index') }}" class="btn btn-outline">
+                <i class="fas fa-times"></i> Annuler
+            </a>
+        </div>
+    </form>
+</div>
+
+<style>
+    .form-row {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 20px;
+    }
+    
+    @media (max-width: 768px) {
+        .form-row {
+            grid-template-columns: 1fr;
+        }
+    }
+</style>
+{% endblock %}

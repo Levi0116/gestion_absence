@@ -1,0 +1,261 @@
+{% extends "base.html" %}
+
+{% block title %}Saisie des présences - {{ enseignement.Nom_matiere }}{% endblock %}
+
+{% block breadcrumb %}
+<a href="{{ url_for('index') }}">Accueil</a>
+<a href="{{ url_for('enseignements_index') }}">Séances</a>
+<span>Saisie des présences</span>
+{% endblock %}
+
+{% block content %}
+<div class="page-header">
+    <h1 class="page-title">
+        <i class="fas fa-check-circle" style="margin-right: 12px;"></i>
+        Saisie des présences
+    </h1>
+</div>
+
+<!-- Informations de la séance -->
+<div class="info-card">
+    <div class="info-item">
+        <i class="fas fa-calendar"></i>
+        <span><strong>{{ enseignement.Date_enseignement.strftime('%d/%m/%Y') if enseignement.Date_enseignement else '' }}</strong></span>
+    </div>
+    <div class="info-item">
+        <i class="fas fa-clock"></i>
+        <span>
+            {% if enseignement.Horaire_debut %}
+                {{ enseignement.Horaire_debut.strftime('%H:%M') if enseignement.Horaire_debut is not string else enseignement.Horaire_debut }} - 
+                {{ enseignement.Horaire_fin.strftime('%H:%M') if enseignement.Horaire_fin is not string else enseignement.Horaire_fin }}
+            {% endif %}
+        </span>
+    </div>
+    <div class="info-item">
+        <i class="fas fa-book"></i>
+        <span>{{ enseignement.Nom_matiere }}</span>
+    </div>
+    <div class="info-item">
+        <i class="fas fa-building"></i>
+        <span>{{ enseignement.Libele_filiere }}</span>
+    </div>
+</div>
+
+<!-- Formulaire de saisie -->
+<div class="saisie-container">
+    <form method="POST" id="presenceForm">
+        <div class="saisie-header">
+            <div class="bulk-actions">
+                <button type="button" class="btn btn-outline btn-sm" onclick="setAll('P')">
+                    <i class="fas fa-check-circle"></i> Tous présents
+                </button>
+                <button type="button" class="btn btn-outline btn-sm" onclick="setAll('A')">
+                    <i class="fas fa-times-circle"></i> Tous absents
+                </button>
+            </div>
+            <span class="etudiants-count">{{ etudiants|length }} étudiants</span>
+        </div>
+        
+        <div class="table-wrapper">
+            <table>
+                <thead>
+                    <tr>
+                        <th>N°</th>
+                        <th>Nom</th>
+                        <th>Prénom</th>
+                        <th>Sexe</th>
+                        <th>Présence</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for etudiant in etudiants %}
+                    <tr>
+                        <td>{{ loop.index }}</td>
+                        <td><strong>{{ etudiant.Nom }}</strong></td>
+                        <td>{{ etudiant.Prenom }}</td>
+                        <td>
+                            <span class="sexe-badge sexe-{{ 'f' if etudiant.Sexe == 'F' else 'm' }}">
+                                {{ etudiant.Sexe }}
+                            </span>
+                        </td>
+                        <td>
+                            <div class="presence-options">
+                                <label class="radio-option radio-present">
+                                    <input type="radio" 
+                                           name="presence_{{ etudiant.id_etudiant }}" 
+                                           value="P"
+                                           {{ 'checked' if etudiant.presence == 'P' else '' }}>
+                                    <span><i class="fas fa-check"></i> Présent</span>
+                                </label>
+                                <label class="radio-option radio-absent">
+                                    <input type="radio" 
+                                           name="presence_{{ etudiant.id_etudiant }}" 
+                                           value="A"
+                                           {{ 'checked' if etudiant.presence == 'A' or not etudiant.presence else '' }}>
+                                    <span><i class="fas fa-times"></i> Absent</span>
+                                </label>
+                                <label class="radio-option radio-justifie">
+                                    <input type="radio" 
+                                           name="presence_{{ etudiant.id_etudiant }}" 
+                                           value="J"
+                                           {{ 'checked' if etudiant.presence == 'J' else '' }}>
+                                    <span><i class="fas fa-check-double"></i> Justifié</span>
+                                </label>
+                            </div>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+        
+        <div class="form-actions">
+            <button type="submit" class="btn btn-success">
+                <i class="fas fa-save"></i> Enregistrer les présences
+            </button>
+            <a href="{{ url_for('enseignement_fiche', id=enseignement.id_enseignement) }}" class="btn btn-outline">
+                <i class="fas fa-times"></i> Annuler
+            </a>
+        </div>
+    </form>
+</div>
+
+<style>
+    .info-card {
+        background: rgba(255, 255, 255, 0.95);
+        backdrop-filter: blur(20px);
+        border-radius: 16px;
+        padding: 20px 25px;
+        margin-bottom: 25px;
+        border: 1px solid rgba(255, 255, 255, 0.3);
+        display: flex;
+        flex-wrap: wrap;
+        gap: 30px;
+    }
+    
+    .info-item {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        color: var(--dark);
+    }
+    
+    .info-item i {
+        color: var(--primary);
+        width: 20px;
+    }
+    
+    .saisie-container {
+        background: rgba(255, 255, 255, 0.95);
+        backdrop-filter: blur(20px);
+        border-radius: 16px;
+        padding: 25px;
+        border: 1px solid rgba(255, 255, 255, 0.3);
+    }
+    
+    .saisie-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 20px;
+    }
+    
+    .bulk-actions {
+        display: flex;
+        gap: 10px;
+    }
+    
+    .etudiants-count {
+        color: var(--gray);
+        font-size: 14px;
+    }
+    
+    .presence-options {
+        display: flex;
+        gap: 15px;
+    }
+    
+    .radio-option {
+        display: flex;
+        align-items: center;
+        gap: 6px;
+        cursor: pointer;
+        padding: 6px 12px;
+        border-radius: 20px;
+        transition: all 0.2s ease;
+    }
+    
+    .radio-option input {
+        display: none;
+    }
+    
+    .radio-option span {
+        display: flex;
+        align-items: center;
+        gap: 5px;
+        font-size: 13px;
+    }
+    
+    .radio-present {
+        background: rgba(16, 185, 129, 0.1);
+        color: #059669;
+    }
+    
+    .radio-present:has(input:checked) {
+        background: #10b981;
+        color: white;
+    }
+    
+    .radio-absent {
+        background: rgba(239, 68, 68, 0.1);
+        color: #dc2626;
+    }
+    
+    .radio-absent:has(input:checked) {
+        background: #ef4444;
+        color: white;
+    }
+    
+    .radio-justifie {
+        background: rgba(245, 158, 11, 0.1);
+        color: #d97706;
+    }
+    
+    .radio-justifie:has(input:checked) {
+        background: #f59e0b;
+        color: white;
+    }
+    
+    .sexe-badge {
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        padding: 5px 12px;
+        border-radius: 20px;
+        font-size: 12px;
+        font-weight: 500;
+    }
+    
+    .sexe-m {
+        background: rgba(59, 130, 246, 0.1);
+        color: #3b82f6;
+    }
+    
+    .sexe-f {
+        background: rgba(236, 72, 153, 0.1);
+        color: #ec4899;
+    }
+    
+    .btn-sm {
+        padding: 8px 16px;
+        font-size: 13px;
+    }
+</style>
+
+<script>
+function setAll(value) {
+    const radios = document.querySelectorAll(`input[value="${value}"]`);
+    radios.forEach(radio => radio.checked = true);
+}
+</script>
+{% endblock %}

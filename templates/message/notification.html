@@ -1,0 +1,219 @@
+{% extends "base.html" %}
+
+{% block title %}Message de notification{% endblock %}
+
+{% block breadcrumb %}
+<a href="{{ url_for('index') }}">Accueil</a>
+<a href="{{ url_for('etudiants_index') }}">Étudiants</a>
+<span>Message</span>
+{% endblock %}
+
+{% block content %}
+<div class="page-header">
+    <h1 class="page-title">
+        <i class="fas fa-envelope" style="margin-right: 12px;"></i>
+        Notification d'absences
+    </h1>
+</div>
+
+<div class="message-container">
+    <div class="message-header">
+        <div class="student-info">
+            <i class="fas fa-user-graduate"></i>
+            <span>
+                Destinataire : <strong>{{ etudiant.Prenom }} {{ etudiant.Nom }}</strong>
+                ({{ etudiant.Libele_filiere }})
+            </span>
+        </div>
+        <div class="message-actions">
+            <button class="btn btn-primary" onclick="copyMessage()">
+                <i class="fas fa-copy"></i> Copier
+            </button>
+            <button class="btn btn-success" onclick="printMessage()">
+                <i class="fas fa-print"></i> Imprimer
+            </button>
+        </div>
+    </div>
+    
+    <div class="message-content" id="messageContent">
+        <pre>{{ message }}</pre>
+    </div>
+    
+    <!-- Récapitulatif des absences -->
+    <div class="absences-summary">
+        <h3>
+            <i class="fas fa-list"></i>
+            Détail des absences ({{ absences|length }})
+        </h3>
+        
+        <table class="mini-table">
+            <thead>
+                <tr>
+                    <th>Date</th>
+                    <th>Matière</th>
+                    <th>Statut</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for absence in absences %}
+                <tr>
+                    <td>{{ absence.Date_enseignement.strftime('%d/%m/%Y') if absence.Date_enseignement else '' }}</td>
+                    <td>{{ absence.Nom_matiere }}</td>
+                    <td>
+                        {% if absence.presence == 'J' %}
+                        <span class="badge badge-justifie">Justifiée</span>
+                        {% else %}
+                        <span class="badge badge-non-justifie">Non justifiée</span>
+                        {% endif %}
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+    
+    <div class="form-actions">
+        <a href="{{ url_for('etudiant_absences', id=etudiant.id_etudiant) }}" class="btn btn-outline">
+            <i class="fas fa-arrow-left"></i> Retour au dossier
+        </a>
+        <a href="{{ url_for('etudiants_index') }}" class="btn btn-outline">
+            <i class="fas fa-users"></i> Liste des étudiants
+        </a>
+    </div>
+</div>
+
+<style>
+    .message-container {
+        background: rgba(255, 255, 255, 0.95);
+        backdrop-filter: blur(20px);
+        border-radius: 16px;
+        padding: 25px;
+        border: 1px solid rgba(255, 255, 255, 0.3);
+    }
+    
+    .message-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 20px;
+        padding-bottom: 15px;
+        border-bottom: 1px solid rgba(0, 0, 0, 0.1);
+    }
+    
+    .student-info {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        color: var(--dark);
+    }
+    
+    .student-info i {
+        color: var(--primary);
+        font-size: 20px;
+    }
+    
+    .message-actions {
+        display: flex;
+        gap: 10px;
+    }
+    
+    .message-content {
+        background: #f8fafc;
+        border-radius: 12px;
+        padding: 25px;
+        margin-bottom: 25px;
+        border: 1px solid #e2e8f0;
+    }
+    
+    .message-content pre {
+        font-family: 'Courier New', monospace;
+        font-size: 14px;
+        line-height: 1.6;
+        white-space: pre-wrap;
+        word-wrap: break-word;
+        margin: 0;
+        color: #1e293b;
+    }
+    
+    .absences-summary {
+        margin-top: 20px;
+    }
+    
+    .absences-summary h3 {
+        margin-bottom: 15px;
+        color: var(--dark);
+        font-size: 16px;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+    }
+    
+    .mini-table {
+        width: 100%;
+        border-collapse: collapse;
+    }
+    
+    .mini-table th,
+    .mini-table td {
+        padding: 10px;
+        text-align: left;
+        border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+    }
+    
+    .mini-table th {
+        font-weight: 600;
+        color: var(--gray);
+        font-size: 12px;
+        text-transform: uppercase;
+    }
+    
+    .badge {
+        display: inline-block;
+        padding: 4px 10px;
+        border-radius: 20px;
+        font-size: 12px;
+        font-weight: 500;
+    }
+    
+    .badge-justifie {
+        background: rgba(245, 158, 11, 0.15);
+        color: #d97706;
+    }
+    
+    .badge-non-justifie {
+        background: rgba(239, 68, 68, 0.15);
+        color: #dc2626;
+    }
+</style>
+
+<script>
+function copyMessage() {
+    const content = document.getElementById('messageContent').innerText;
+    navigator.clipboard.writeText(content).then(() => {
+        alert('Message copié dans le presse-papiers !');
+    });
+}
+
+function printMessage() {
+    const content = document.getElementById('messageContent').innerHTML;
+    const printWindow = window.open('', '_blank');
+    printWindow.document.write(`
+        <html>
+            <head>
+                <title>Notification d'absences - {{ etudiant.Prenom }} {{ etudiant.Nom }}</title>
+                <style>
+                    body { font-family: Arial, sans-serif; padding: 40px; }
+                    pre { font-family: 'Courier New', monospace; font-size: 14px; line-height: 1.6; }
+                </style>
+            </head>
+            <body>
+                <h2>Notification d'absences</h2>
+                <pre>${document.getElementById('messageContent').innerText}</pre>
+            </body>
+        </html>
+    `);
+    printWindow.document.close();
+    printWindow.print();
+}
+</script>
+{% endblock %}

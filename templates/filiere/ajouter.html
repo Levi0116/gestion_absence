@@ -1,0 +1,55 @@
+{% extends "base.html" %}
+
+{% block title %}Ajouter une Filière{% endblock %}
+
+{% block breadcrumb %}
+<a href="{{ url_for('index') }}">Accueil</a>
+<a href="{{ url_for('filieres_index') }}">Filières</a>
+<span>Ajouter</span>
+{% endblock %}
+
+{% block content %}
+<div class="page-header">
+    <h1 class="page-title">
+        <i class="fas fa-plus-circle" style="margin-right: 12px;"></i>
+        Nouvelle filière
+    </h1>
+</div>
+
+<div class="form-container">
+    <form method="POST">
+        <div class="form-group">
+            <label for="libelle">
+                <i class="fas fa-tag"></i> Libellé de la filière *
+            </label>
+            <input type="text" 
+                   id="libelle" 
+                   name="libelle" 
+                   class="form-control" 
+                   required 
+                   placeholder="Ex: Informatique">
+        </div>
+
+        <div class="form-group">
+            <label for="nbre_etudiant">
+                <i class="fas fa-users"></i> Nombre d'étudiants
+            </label>
+            <input type="number" 
+                   id="nbre_etudiant" 
+                   name="nbre_etudiant" 
+                   class="form-control" 
+                   value="0"
+                   min="0">
+        </div>
+
+        <div class="form-actions">
+            <button type="submit" class="btn btn-success">
+                <i class="fas fa-save"></i> Enregistrer
+            </button>
+            <a href="{{ url_for('filieres_index') }}" class="btn btn-outline">
+                <i class="fas fa-times"></i> Annuler
+            </a>
+        </div>
+    </form>
+</div>
+{% endblock %}

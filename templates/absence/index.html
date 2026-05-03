@@ -1,0 +1,122 @@
+{% extends "base.html" %}
+
+{% block title %}Absences non justifiées{% endblock %}
+
+{% block breadcrumb %}
+<a href="{{ url_for('index') }}">Accueil</a>
+<span>Absences à justifier</span>
+{% endblock %}
+
+{% block content %}
+<div class="page-header">
+    <h1 class="page-title">
+        <i class="fas fa-exclamation-triangle" style="margin-right: 12px;"></i>
+        Absences non justifiées
+    </h1>
+</div>
+
+<!-- Filtre par filière -->
+<div class="filter-bar">
+    <form method="GET" style="display: flex; align-items: center; gap: 15px;">
+        <label><i class="fas fa-filter"></i> Filtrer par filière :</label>
+        <select name="filiere" class="form-control" style="width: 250px;" onchange="this.form.submit()">
+            <option value="">Toutes les filières</option>
+            {% for filiere in filieres %}
+            <option value="{{ filiere.code_filiere }}" {{ 'selected' if selected_filiere == filiere.code_filiere else '' }}>
+                {{ filiere.Libele_filiere }}
+            </option>
+            {% endfor %}
+        </select>
+        {% if selected_filiere %}
+        <a href="{{ url_for('absences_index') }}" class="btn btn-outline btn-sm">
+            <i class="fas fa-times"></i> Réinitialiser
+        </a>
+        {% endif %}
+    </form>
+</div>
+
+<div class="table-wrapper">
+    {% if absences %}
+    <table>
+        <thead>
+            <tr>
+                <th>Étudiant</th>
+                <th>Filière</th>
+                <th>Date</th>
+                <th>Matière</th>
+                <th>Horaire</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for absence in absences %}
+            <tr>
+                <td>
+                    <strong>{{ absence.Prenom }} {{ absence.Nom }}</strong>
+                </td>
+                <td>{{ absence.Libele_filiere }}</td>
+                <td>{{ absence.Date_enseignement.strftime('%d/%m/%Y') if absence.Date_enseignement else '' }}</td>
+                <td>{{ absence.Nom_matiere }}</td>
+                <td>
+                    {% if absence.Horaire_debut %}
+                        {{ absence.Horaire_debut.strftime('%H:%M') if absence.Horaire_debut is not string else absence.Horaire_debut }} - 
+                        {{ absence.Horaire_fin.strftime('%H:%M') if absence.Horaire_fin is not string else absence.Horaire_fin }}
+                    {% endif %}
+                </td>
+                <td class="actions">
+                    <a href="{{ url_for('absence_justifier', etudiant=absence.id_etudiant, enseignement=absence.id_enseignement) }}" 
+                       class="btn-icon" 
+                       title="Justifier l'absence" 
+                       style="background: #f59e0b; color: white;">
+                        <i class="fas fa-check"></i>
+                    </a>
+                    <a href="{{ url_for('generer_message', etudiant=absence.id_etudiant) }}" 
+                       class="btn-icon" 
+                       title="Envoyer un message" 
+                       style="background: #3b82f6; color: white;">
+                        <i class="fas fa-envelope"></i>
+                    </a>
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+    {% else %}
+    <div class="empty-state">
+        <i class="fas fa-check-circle" style="color: #10b981; font-size: 64px; opacity: 0.5;"></i>
+        <h3>Aucune absence non justifiée</h3>
+        <p>Toutes les absences ont été justifiées</p>
+    </div>
+    {% endif %}
+</div>
+
+<style>
+    .filter-bar {
+        background: rgba(255, 255, 255, 0.95);
+        backdrop-filter: blur(20px);
+        border-radius: 12px;
+        padding: 15px 20px;
+        margin-bottom: 20px;
+        border: 1px solid rgba(255, 255, 255, 0.3);
+    }
+    
+    .btn-sm {
+        padding: 8px 16px;
+        font-size: 13px;
+    }
+    
+    .empty-state {
+        text-align: center;
+        padding: 60px 20px;
+    }
+    
+    .empty-state h3 {
+        margin: 20px 0 10px;
+        color: var(--dark);
+    }
+    
+    .empty-state p {
+        color: var(--gray);
+    }
+</style>
+{% endblock %}

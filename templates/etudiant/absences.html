@@ -1,0 +1,248 @@
+{% extends "base.html" %}
+
+{% block title %}Absences - {{ etudiant.Prenom }} {{ etudiant.Nom }}{% endblock %}
+
+{% block breadcrumb %}
+<a href="{{ url_for('index') }}">Accueil</a>
+<a href="{{ url_for('etudiants_index') }}">Étudiants</a>
+<span>Absences</span>
+{% endblock %}
+
+{% block content %}
+<div class="page-header">
+    <h1 class="page-title">
+        <i class="fas fa-clock" style="margin-right: 12px;"></i>
+        Absences de {{ etudiant.Prenom }} {{ etudiant.Nom }}
+    </h1>
+    <a href="{{ url_for('generer_message', etudiant=etudiant.id_etudiant) }}" class="btn btn-primary">
+        <i class="fas fa-envelope"></i>
+        Générer un message
+    </a>
+</div>
+
+<!-- Résumé -->
+<div class="stats-mini">
+    <div class="stat-box">
+        <i class="fas fa-calendar-check"></i>
+        <div>
+            <span class="stat-value">{{ stats.presences or 0 }}</span>
+            <span class="stat-label">Présences</span>
+        </div>
+    </div>
+    <div class="stat-box stat-warning">
+        <i class="fas fa-clock"></i>
+        <div>
+            <span class="stat-value">{{ stats.absences or 0 }}</span>
+            <span class="stat-label">Absences non just.</span>
+        </div>
+    </div>
+    <div class="stat-box stat-success">
+        <i class="fas fa-check-circle"></i>
+        <div>
+            <span class="stat-value">{{ stats.justifiees or 0 }}</span>
+            <span class="stat-label">Absences justifiées</span>
+        </div>
+    </div>
+    <div class="stat-box stat-info">
+        <i class="fas fa-list"></i>
+        <div>
+            <span class="stat-value">{{ stats.total_seances or 0 }}</span>
+            <span class="stat-label">Total séances</span>
+        </div>
+    </div>
+</div>
+
+<!-- Informations étudiant -->
+<div class="info-card">
+    <div class="info-item">
+        <i class="fas fa-user"></i>
+        <span><strong>{{ etudiant.Prenom }} {{ etudiant.Nom }}</strong></span>
+    </div>
+    <div class="info-item">
+        <i class="fas fa-building"></i>
+        <span>{{ etudiant.Libele_filiere }}</span>
+    </div>
+    <div class="info-item">
+        <i class="fas fa-venus-mars"></i>
+        <span>{{ 'Féminin' if etudiant.Sexe == 'F' else 'Masculin' }}</span>
+    </div>
+</div>
+
+<!-- Liste des absences -->
+<div class="table-wrapper">
+    <h3 style="margin-bottom: 20px;">
+        <i class="fas fa-history"></i> Historique des absences
+    </h3>
+    
+    {% if absences %}
+    <table>
+        <thead>
+            <tr>
+                <th>Date</th>
+                <th>Matière</th>
+                <th>Enseignant</th>
+                <th>Horaire</th>
+                <th>Statut</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for absence in absences %}
+            <tr>
+                <td>{{ absence.Date_enseignement.strftime('%d/%m/%Y') if absence.Date_enseignement else '' }}</td>
+                <td><strong>{{ absence.Nom_matiere }}</strong></td>
+                <td>{{ absence.prenom_enseignant }} {{ absence.nom_enseignant }}</td>
+                <td>
+                    {% if absence.Horaire_debut %}
+                        {{ absence.Horaire_debut.strftime('%H:%M') if absence.Horaire_debut is not string else absence.Horaire_debut }} - 
+                        {{ absence.Horaire_fin.strftime('%H:%M') if absence.Horaire_fin is not string else absence.Horaire_fin }}
+                    {% else %}
+                        -
+                    {% endif %}
+                </td>
+                <td>
+                    {% if absence.presence == 'J' %}
+                    <span class="badge badge-success">
+                        <i class="fas fa-check"></i> Justifiée
+                    </span>
+                    {% else %}
+                    <span class="badge badge-danger">
+                        <i class="fas fa-times"></i> Non justifiée
+                    </span>
+                    {% endif %}
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+    {% else %}
+    <div class="empty-state-small">
+        <i class="fas fa-check-circle" style="color: #10b981;"></i>
+        <p>Aucune absence enregistrée pour cet étudiant</p>
+    </div>
+    {% endif %}
+</div>
+
+<div class="form-actions" style="margin-top: 20px;">
+    <a href="{{ url_for('etudiants_index') }}" class="btn btn-outline">
+        <i class="fas fa-arrow-left"></i> Retour à la liste
+    </a>
+</div>
+
+<style>
+    .stats-mini {
+        display: grid;
+        grid-template-columns: repeat(4, 1fr);
+        gap: 20px;
+        margin-bottom: 20px;
+    }
+    
+    .stat-box {
+        background: rgba(255, 255, 255, 0.95);
+        backdrop-filter: blur(20px);
+        border-radius: 16px;
+        padding: 20px;
+        border: 1px solid rgba(255, 255, 255, 0.3);
+        display: flex;
+        align-items: center;
+        gap: 15px;
+    }
+    
+    .stat-box i {
+        font-size: 32px;
+        color: var(--primary);
+        opacity: 0.7;
+    }
+    
+    .stat-warning i {
+        color: #f59e0b;
+    }
+    
+    .stat-success i {
+        color: #10b981;
+    }
+    
+    .stat-info i {
+        color: #3b82f6;
+    }
+    
+    .stat-value {
+        display: block;
+        font-size: 28px;
+        font-weight: 700;
+        color: var(--dark);
+    }
+    
+    .stat-label {
+        font-size: 13px;
+        color: var(--gray);
+    }
+    
+    .info-card {
+        background: rgba(255, 255, 255, 0.95);
+        backdrop-filter: blur(20px);
+        border-radius: 16px;
+        padding: 20px 25px;
+        margin-bottom: 25px;
+        border: 1px solid rgba(255, 255, 255, 0.3);
+        display: flex;
+        gap: 30px;
+    }
+    
+    .info-item {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        color: var(--dark);
+    }
+    
+    .info-item i {
+        color: var(--primary);
+        width: 20px;
+    }
+    
+    .badge {
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        padding: 6px 14px;
+        border-radius: 20px;
+        font-size: 13px;
+        font-weight: 500;
+    }
+    
+    .badge-success {
+        background: rgba(16, 185, 129, 0.15);
+        color: #059669;
+    }
+    
+    .badge-danger {
+        background: rgba(239, 68, 68, 0.15);
+        color: #dc2626;
+    }
+    
+    .empty-state-small {
+        text-align: center;
+        padding: 40px;
+    }
+    
+    .empty-state-small i {
+        font-size: 48px;
+        margin-bottom: 15px;
+    }
+    
+    .empty-state-small p {
+        color: var(--gray);
+    }
+    
+    @media (max-width: 768px) {
+        .stats-mini {
+            grid-template-columns: repeat(2, 1fr);
+        }
+        
+        .info-card {
+            flex-direction: column;
+            gap: 10px;
+        }
+    }
+</style>
+{% endblock %}

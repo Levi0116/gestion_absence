@@ -1,0 +1,117 @@
+{% extends "base.html" %}
+
+{% block title %}Modifier un Enseignant{% endblock %}
+
+{% block breadcrumb %}
+<a href="{{ url_for('index') }}">Accueil</a>
+<a href="{{ url_for('enseignants_index') }}">Enseignants</a>
+<span>Modifier</span>
+{% endblock %}
+
+{% block content %}
+<div class="page-header">
+    <h1 class="page-title">
+        <i class="fas fa-user-edit" style="margin-right: 12px;"></i>
+        Modifier l'enseignant
+    </h1>
+</div>
+
+<div class="form-container">
+    <form method="POST">
+        <div class="form-row">
+            <div class="form-group">
+                <label for="nom">
+                    <i class="fas fa-user"></i> Nom *
+                </label>
+                <input type="text" 
+                       id="nom" 
+                       name="nom" 
+                       class="form-control" 
+                       value="{{ enseignant.Nom }}"
+                       required>
+            </div>
+
+            <div class="form-group">
+                <label for="prenom">
+                    <i class="fas fa-user"></i> Prénom *
+                </label>
+                <input type="text" 
+                       id="prenom" 
+                       name="prenom" 
+                       class="form-control" 
+                       value="{{ enseignant.Prenom }}"
+                       required>
+            </div>
+        </div>
+
+        <div class="form-group">
+            <label for="mail">
+                <i class="fas fa-envelope"></i> Adresse email *
+            </label>
+            <input type="email" 
+                   id="mail" 
+                   name="mail" 
+                   class="form-control" 
+                   value="{{ enseignant.Mail }}"
+                   required>
+        </div>
+
+        <div class="form-row">
+            <div class="form-group">
+                <label for="specialite">
+                    <i class="fas fa-graduation-cap"></i> Spécialité
+                </label>
+                <input type="text" 
+                       id="specialite" 
+                       name="specialite" 
+                       class="form-control" 
+                       value="{{ enseignant.Specialite or '' }}">
+            </div>
+
+            <div class="form-group">
+                <label for="diplome">
+                    <i class="fas fa-certificate"></i> Diplôme
+                </label>
+                <input type="text" 
+                       id="diplome" 
+                       name="diplome" 
+                       class="form-control" 
+                       value="{{ enseignant.Diplome or '' }}">
+            </div>
+        </div>
+
+        <div class="form-group">
+            <label for="sexe">
+                <i class="fas fa-venus-mars"></i> Sexe *
+            </label>
+            <select id="sexe" name="sexe" class="form-control" required>
+                <option value="M" {{ 'selected' if enseignant.Sexe == 'M' else '' }}>Masculin</option>
+                <option value="F" {{ 'selected' if enseignant.Sexe == 'F' else '' }}>Féminin</option>
+            </select>
+        </div>
+
+        <div class="form-actions">
+            <button type="submit" class="btn btn-success">
+                <i class="fas fa-save"></i> Mettre à jour
+            </button>
+            <a href="{{ url_for('enseignants_index') }}" class="btn btn-outline">
+                <i class="fas fa-times"></i> Annuler
+            </a>
+        </div>
+    </form>
+</div>
+
+<style>
+    .form-row {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 20px;
+    }
+    
+    @media (max-width: 768px) {
+        .form-row {
+            grid-template-columns: 1fr;
+        }
+    }
+</style>
+{% endblock %}

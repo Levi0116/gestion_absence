@@ -1,0 +1,67 @@
+{% extends "base.html" %}
+
+{% block title %}Modifier une Filière{% endblock %}
+
+{% block breadcrumb %}
+<a href="{{ url_for('index') }}">Accueil</a>
+<a href="{{ url_for('filieres_index') }}">Filières</a>
+<span>Modifier</span>
+{% endblock %}
+
+{% block content %}
+<div class="page-header">
+    <h1 class="page-title">
+        <i class="fas fa-edit" style="margin-right: 12px;"></i>
+        Modifier la filière
+    </h1>
+</div>
+
+<div class="form-container">
+    <form method="POST">
+        <div class="form-group">
+            <label for="code_filiere">
+                <i class="fas fa-hashtag"></i> Code filière
+            </label>
+            <input type="text" 
+                   id="code_filiere" 
+                   class="form-control" 
+                   value="{{ filiere.code_filiere }}"
+                   disabled
+                   style="background: #f3f4f6;">
+        </div>
+
+        <div class="form-group">
+            <label for="libelle">
+                <i class="fas fa-tag"></i> Libellé de la filière *
+            </label>
+            <input type="text" 
+                   id="libelle" 
+                   name="libelle" 
+                   class="form-control" 
+                   value="{{ filiere.Libele_filiere }}"
+                   required>
+        </div>
+
+        <div class="form-group">
+            <label for="nbre_etudiant">
+                <i class="fas fa-users"></i> Nombre d'étudiants
+            </label>
+            <input type="number" 
+                   id="nbre_etudiant" 
+                   name="nbre_etudiant" 
+                   class="form-control" 
+                   value="{{ filiere.Nbre_etudiant }}"
+                   min="0">
+        </div>
+
+        <div class="form-actions">
+            <button type="submit" class="btn btn-success">
+                <i class="fas fa-save"></i> Mettre à jour
+            </button>
+            <a href="{{ url_for('filieres_index') }}" class="btn btn-outline">
+                <i class="fas fa-times"></i> Annuler
+            </a>
+        </div>
+    </form>
+</div>
+{% endblock %}
