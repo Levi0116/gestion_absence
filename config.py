@@ -7,17 +7,18 @@ from pathlib import Path
 env_path = Path('.') / '.env'
 load_dotenv(dotenv_path=env_path, override=True)
 
+# config.py
+import os
+
 class Config:
-    SECRET_KEY = os.environ.get('SECRET_KEY') or 'dev-secret-key-change-in-production'
-    
-    # Configuration MySQL - Forcer la lecture depuis .env
-    MYSQL_HOST = os.environ.get('MYSQL_HOST', 'localhost')
-    MYSQL_USER = os.environ.get('MYSQL_USER', 'root')
-    MYSQL_PASSWORD = os.environ.get('MYSQL_PASSWORD', '')
-    MYSQL_DATABASE = os.environ.get('MYSQL_DATABASE', 'gestion_absences')
-    MYSQL_PORT = int(os.environ.get('MYSQL_PORT', 3306))
-    
-    # Règlement des absences
+    SECRET_KEY = os.environ.get('SECRET_KEY') or 'dev-secret-key'
+
+    MYSQL_HOST = os.environ.get('MYSQLHOST', 'mysql.railway.internal')
+    MYSQL_USER = os.environ.get('MYSQLUSER', 'root')
+    MYSQL_PASSWORD = os.environ.get('MYSQLPASSWORD', '')
+    MYSQL_DATABASE = os.environ.get('MYSQLDATABASE', 'railway')
+    MYSQL_PORT = int(os.environ.get('MYSQLPORT', 3306))
+
     PENALITE_PAR_HEURE = 0.1
     SEUIL_INVALIDATION_CREDITS = 5
     
