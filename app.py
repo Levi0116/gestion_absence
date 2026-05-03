@@ -2,6 +2,7 @@
 from flask import Flask, render_template, request, redirect, url_for, flash, jsonify
 from models.database import RapportModel
 from config import Config
+import os
 from models.database import (
     PeriodeModel, MatiereModel, EnseignantModel, 
     FiliereModel, CorrespondreModel, Database,
@@ -435,7 +436,8 @@ def api_etudiants_par_filiere(filiere):
 
 # ============= DÉMARRAGE =============
 if __name__ == '__main__':
-    app.run(debug=True, port=5000)
+    port = int(os.environ.get('PORT', 5000))
+    app.run(host='0.0.0.0', port=port, debug=False)
     
 # ============= MODULE 3 - ROUTES D'ÉDITION/CONSULTATION =============
 
