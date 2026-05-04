@@ -2,7 +2,6 @@
 
 import mysql.connector
 from mysql.connector import Error
-sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 from config import Config
 import os
 import sys
