@@ -624,3 +624,15 @@ def module3_export_absences_justifiees():
         mimetype="text/csv",
         headers={"Content-Disposition": "attachment;filename=absences_justifiees.csv"}
     )
+    
+@app.route('/test')
+def test():
+    return "OK - Flask fonctionne !", 200
+
+@app.route('/test-db')
+def test_db():
+    try:
+        from config import Config
+        return f"HOST: {Config.MYSQL_HOST} | DB: {Config.MYSQL_DATABASE} | PORT: {Config.MYSQL_PORT}", 200
+    except Exception as e:
+        return f"Erreur: {str(e)}", 500
